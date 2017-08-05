@@ -282,15 +282,30 @@ namespace Tamagawa.EnmityPlugin
         /// </summary>
         public Combatant GetAnchorCombatant()
         {
-            Combatant self = null;
+            Combatant target = null;
+            IntPtr address = IntPtr.Zero;
+
             int offset = _mode == FFXIVClientMode.FFXIV_64 ? 0x08 : 0x04;
-            IntPtr address = (IntPtr)GetUInt32(targetAddress + offset);
-            if (address.ToInt64() > 0)
+            byte[] source = GetByteArray(IntPtr.Add(targetAddress, offset), 128);
+            unsafe
             {
-                byte[] source = GetByteArray(address, 0x3F40);
-                self = GetCombatantFromByteArray(source);
+                if (_mode == FFXIVClientMode.FFXIV_64)
+                {
+                    fixed (byte* p = source) address = new IntPtr(*(Int64*)p);
+                }
+                else
+                {
+                    fixed (byte* p = source) address = new IntPtr(*(Int32*)p);
+                }
             }
-            return self;
+            if (address.ToInt64() <= 0)
+            {
+                return null;
+            }
+
+            source = GetByteArray(address, 0x3F40);
+            target = GetCombatantFromByteArray(source);
+            return target;
         }
 
         /// <summary>
@@ -298,15 +313,30 @@ namespace Tamagawa.EnmityPlugin
         /// </summary>
         public Combatant GetFocusCombatant()
         {
-            Combatant self = null;
+            Combatant target = null;
+            IntPtr address = IntPtr.Zero;
+
             int offset = _mode == FFXIVClientMode.FFXIV_64 ? 0x78 : 0x44;
-            IntPtr address = (IntPtr)GetUInt32(targetAddress + offset);
-            if (address.ToInt64() > 0)
+            byte[] source = GetByteArray(IntPtr.Add(targetAddress, offset), 128);
+            unsafe
             {
-                byte[] source = GetByteArray(address, 0x3F40);
-                self = GetCombatantFromByteArray(source);
+                if (_mode == FFXIVClientMode.FFXIV_64)
+                {
+                    fixed (byte* p = source) address = new IntPtr(*(Int64*)p);
+                }
+                else
+                {
+                    fixed (byte* p = source) address = new IntPtr(*(Int32*)p);
+                }
             }
-            return self;
+            if (address.ToInt64() <= 0)
+            {
+                return null;
+            }
+
+            source = GetByteArray(address, 0x3F40);
+            target = GetCombatantFromByteArray(source);
+            return target;
         }
 
         /// <summary>
@@ -314,15 +344,30 @@ namespace Tamagawa.EnmityPlugin
         /// </summary>
         public Combatant GetHoverCombatant()
         {
-            Combatant self = null;
+            Combatant target = null;
+            IntPtr address = IntPtr.Zero;
+
             int offset = _mode == FFXIVClientMode.FFXIV_64 ? 0x48 : 0x24;
-            IntPtr address = (IntPtr)GetUInt32(targetAddress + offset);
-            if (address.ToInt64() > 0)
+            byte[] source = GetByteArray(IntPtr.Add(targetAddress, offset), 128);
+            unsafe
             {
-                byte[] source = GetByteArray(address, 0x3F40);
-                self = GetCombatantFromByteArray(source);
+                if (_mode == FFXIVClientMode.FFXIV_64)
+                {
+                    fixed (byte* p = source) address = new IntPtr(*(Int64*)p);
+                }
+                else
+                {
+                    fixed (byte* p = source) address = new IntPtr(*(Int32*)p);
+                }
             }
-            return self;
+            if (address.ToInt64() <= 0)
+            {
+                return null;
+            }
+
+            source = GetByteArray(address, 0x3F40);
+            target = GetCombatantFromByteArray(source);
+            return target;
         }
 
         /// <summary>
