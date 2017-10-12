@@ -22,12 +22,13 @@ namespace Tamagawa.EnmityPlugin
         internal List<Combatant> Combatants { get; private set; }
         internal object CombatantsLock => new object();
 
-        private const string charmapSignature32 = "81FEFFFF0000743581FE58010000732D8B3CB5";
+        private const string charmapSignature32 = "81FEFFFF0000743581FE58010000732D8B3CB5"; // not work in 4.1
         private const string charmapSignature64 = "488b03488bcbff90a0000000888391000000488d0d";
-        private const string targetSignature32  = "750E85D2750AB9";
-        private const string targetSignature64  = "1E017520483935";
-        private const string enmitySignature32  = "E8??E33000B9??A4????E8????3300B9";
-        private const string enmitySignature64  = "0CA43C00488D0D????3C01E8????3F00488D0D";
+        private const string targetSignature32  = "750E85D2750AB9"; // not work in 4.1
+        private const string targetSignature64  = "32c984c9410f44c4448be0e9????????488d0d";
+        // not used
+        //private const string enmitySignature32  = "E8??E33000B9??A4????E8????3300B9";
+        //private const string enmitySignature64  = "0CA43C00488D0D????3C01E8????3F00488D0D";
         private const int charmapOffset32 = 0;
         private const int charmapOffset64 = 16;
         private const int targetOffset32  = 88;
