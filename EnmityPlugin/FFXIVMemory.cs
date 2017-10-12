@@ -26,15 +26,14 @@ namespace Tamagawa.EnmityPlugin
         private const string charmapSignature64 = "488b03488bcbff90a0000000888391000000488d0d";
         private const string targetSignature32  = "750E85D2750AB9"; // not work in 4.1
         private const string targetSignature64  = "32c984c9410f44c4448be0e9????????488d0d";
-        // not used
-        //private const string enmitySignature32  = "E8??E33000B9??A4????E8????3300B9";
-        //private const string enmitySignature64  = "0CA43C00488D0D????3C01E8????3F00488D0D";
-        private const int charmapOffset32 = 0;
+        private const string enmitySignature32  = "E8??E33000B9??A4????E8????3300B9"; // not work in 4.1
+        private const string enmitySignature64  = "83f9ff7412448b048e8bd3488d0d";
+        private const int charmapOffset32 = 0; // not work in 4.1
         private const int charmapOffset64 = 16;
-        private const int targetOffset32  = 88;
-        private const int targetOffset64  = 0;
-        private const int enmityOffset32  = 0x4A58;
-        private const int enmityOffset64  = 0x4A38;
+        private const int targetOffset32  = 88; // not work in 4.1
+        private const int targetOffset64  = 144;
+        private const int enmityOffset32  = 0x4A58; // not work in 4.1
+        private const int enmityOffset64  = -4648;
 
         private EnmityOverlay _overlay;
         private Process _process;
@@ -146,7 +145,7 @@ namespace Tamagawa.EnmityPlugin
             bool success = true;
             string charmapSignature = charmapSignature32;
             string targetSignature = targetSignature32;
-            // string enmitySignature = enmitySignature32;
+            string enmitySignature = enmitySignature32;
             int targetOffset = targetOffset32;
             int charmapOffset = charmapOffset32;
             int enmityOffset = enmityOffset32;
@@ -161,7 +160,7 @@ namespace Tamagawa.EnmityPlugin
                 charmapOffset = charmapOffset64;
                 targetSignature = targetSignature64;
                 charmapSignature = charmapSignature64;
-                //enmitySignature = enmitySignature64;
+                enmitySignature = enmitySignature64;
                 enmityOffset = enmityOffset64;
             }
 
@@ -182,9 +181,9 @@ namespace Tamagawa.EnmityPlugin
             }
 
             // ENMITY
-            enmityAddress = IntPtr.Add(charmapAddress, enmityOffset);
-            aggroAddress = IntPtr.Add(enmityAddress, 0x900 + 8);
-            /*
+            //enmityAddress = IntPtr.Add(charmapAddress, enmityOffset);
+            //aggroAddress = IntPtr.Add(enmityAddress, 0x900 + 8);
+            
             list = SigScan(enmitySignature, 0, bRIP);
             if (list == null || list.Count == 0)
             {
@@ -200,7 +199,8 @@ namespace Tamagawa.EnmityPlugin
                 fail.Add(nameof(enmityAddress));
                 success = false;
             }
-            */
+            aggroAddress = IntPtr.Add(enmityAddress, 0x900 + 8);
+
             /// TARGET
             list = SigScan(targetSignature, 0, bRIP);
             if (list == null || list.Count == 0)
@@ -438,12 +438,12 @@ namespace Tamagawa.EnmityPlugin
                 combatant.PosZ = *(Single*)&p[offset + 4];
                 combatant.PosY = *(Single*)&p[offset + 8];
 
-                offset = (_mode == FFXIVClientMode.FFXIV_64) ? 0x1610 : 2520;
+                offset = (_mode == FFXIVClientMode.FFXIV_64) ? 0x1620 : 2520;
                 combatant.TargetID = *(uint*)&p[offset];
 
                 if (combatant.type == ObjectType.PC || combatant.type == ObjectType.Monster)
                 {
-                    offset = (_mode == FFXIVClientMode.FFXIV_64) ? 0x1684 : 0x1198;
+                    offset = (_mode == FFXIVClientMode.FFXIV_64) ? 0x16A0 : 0x1198;
                     combatant.Job       = p[offset + 0x3E];
                     combatant.Level     = p[offset + 0x40];
                     combatant.CurrentHP = *(int*)&p[offset + 8];
