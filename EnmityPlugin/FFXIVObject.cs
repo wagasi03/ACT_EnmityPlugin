@@ -16,6 +16,9 @@ namespace Tamagawa.EnmityPlugin
 
     public class Combatant
     {
+        // For Debug
+        public string BoA;
+
         public uint ID;
         public uint OwnerID;
         public int Order;

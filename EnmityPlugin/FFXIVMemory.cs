@@ -22,18 +22,18 @@ namespace Tamagawa.EnmityPlugin
         internal List<Combatant> Combatants { get; private set; }
         internal object CombatantsLock => new object();
 
-        private const string charmapSignature32 = "81FEFFFF0000743581FE58010000732D8B3CB5"; // not work in 4.1
-        private const string charmapSignature64 = "488b03488bcbff90a0000000888391000000488d0d";
-        private const string targetSignature32  = "750E85D2750AB9"; // not work in 4.1
-        private const string targetSignature64  = "32c984c9410f44c4448be0e9????????488d0d";
-        private const string enmitySignature32  = "E8??E33000B9??A4????E8????3300B9"; // not work in 4.1
-        private const string enmitySignature64  = "83f9ff7412448b048e8bd3488d0d";
-        private const int charmapOffset32 = 0; // not work in 4.1
-        private const int charmapOffset64 = 16;
-        private const int targetOffset32  = 88; // not work in 4.1
-        private const int targetOffset64  = 144;
-        private const int enmityOffset32  = 0x4A58; // not work in 4.1
-        private const int enmityOffset64  = -4648;
+        private const string charmapSignature32 = "81FEFFFF0000743581FE58010000732D8B3CB5"; // not supported
+        private const string charmapSignature64 = "488b420848c1e8033da701000077248bc0488d0d"; // 4.2 maybe ok.
+        private const string targetSignature32  = "750E85D2750AB9"; // not supported
+        private const string targetSignature64  = "41bc000000e041bd01000000493bc47555488d0d"; // 4.2 OK.
+        private const string enmitySignature32  = "E8??E33000B9??A4????E8????3300B9"; // not supported
+        private const string enmitySignature64  = "83f9ff7412448b048e8bd3488d0d"; // NEEEED!!
+        private const int charmapOffset32 = 0; // not supported
+        private const int charmapOffset64 = 0; // 4.2 maybe ok.
+        private const int targetOffset32  = 88; // not supported
+        private const int targetOffset64  = 144; //4.2 ok.
+        private const int enmityOffset32  = 0x4A58; // not supported
+        private const int enmityOffset64  = -4648; // NEEEED!!
 
         private EnmityOverlay _overlay;
         private Process _process;
@@ -423,6 +423,8 @@ namespace Tamagawa.EnmityPlugin
             Combatant combatant = new Combatant();
             fixed (byte* p = source)
             {
+                combatant.BoA = BitConverter.ToString(source);
+
                 combatant.Name    = GetStringFromBytes(source, 0x30);
                 combatant.ID      = *(uint*)&p[0x74];
                 combatant.OwnerID = *(uint*)&p[0x84];
@@ -439,18 +441,18 @@ namespace Tamagawa.EnmityPlugin
                 combatant.PosY = *(Single*)&p[offset + 8];
 
                 offset = (_mode == FFXIVClientMode.FFXIV_64) ? 0x1620 : 2520;
-                combatant.TargetID = *(uint*)&p[offset];
+                combatant.TargetID = *(uint*)&p[offset]; //5672? 5680? 5796? 6744? in 4.2
 
                 if (combatant.type == ObjectType.PC || combatant.type == ObjectType.Monster)
                 {
                     offset = (_mode == FFXIVClientMode.FFXIV_64) ? 0x16A0 : 0x1198;
-                    combatant.Job       = p[offset + 0x3E];
-                    combatant.Level     = p[offset + 0x40];
-                    combatant.CurrentHP = *(int*)&p[offset + 8];
-                    combatant.MaxHP     = *(int*)&p[offset + 12];
-                    combatant.CurrentMP = *(int*)&p[offset + 16];
-                    combatant.MaxMP     = *(int*)&p[offset + 20];
-                    combatant.CurrentTP = *(short*)&p[offset + 24];
+                    combatant.Job       = p[5870];
+                    combatant.Level     = p[5872];
+                    combatant.CurrentHP = *(int*)&p[5816];
+                    combatant.MaxHP     = *(int*)&p[5820];
+                    combatant.CurrentMP = *(int*)&p[5824];
+                    combatant.MaxMP     = *(int*)&p[5828];
+                    combatant.CurrentTP = *(short*)&p[5832];
                     combatant.MaxTP     = 1000;
                 }
                 else
