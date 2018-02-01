@@ -20,7 +20,7 @@ namespace Tamagawa.EnmityPlugin
 
     public class UpdateChecker
     {
-        private const string EndPoint = @"https://api.github.com/repos/xtuaok/ACT_EnmityPlugin/releases/latest";
+        private const string EndPoint = @"https://api.github.com/repos/TamanegiMage/ACT_EnmityPlugin/releases/latest";
         public static string ProductName
         {
             get

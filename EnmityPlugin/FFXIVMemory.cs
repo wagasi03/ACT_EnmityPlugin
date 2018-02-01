@@ -480,13 +480,13 @@ namespace Tamagawa.EnmityPlugin
 
             /// 一度に全部読む
             byte[] buffer = GetByteArray(enmityAddress, 0x900 + 2);
-            fixed (byte* p = buffer) num = (short)p[0x900];
+            fixed (byte* p = buffer) num = (short)p[2296];
 
             if (num <= 0)
             {
                 return result;
             }
-            if (num > 32) num = 32;
+            if (num > 31) num = 31; // changed??? 32->31
 
             for (short i = 0; i < num; i++)
             {
@@ -544,21 +544,26 @@ namespace Tamagawa.EnmityPlugin
 
             // 一度に全部読む
             byte[] buffer = GetByteArray(aggroAddress, 32 * 72 + 2);
-
-            fixed (byte* p = buffer) num = (short)p[0x900];
-            num = 32;
-            /*
+            fixed (byte* p = buffer) num = (short)p[2296];
             if (num <= 0)
             {
                 return result;
             }
-            if (num > 32) num = 32;
-            */
+            if (num > 31) num = 31; // max changed??? 32->31
+            
 
             // current target
             //currentTargetID = GetUInt32(aggroAddress, -4);
             //if (currentTargetID == 3758096384u) currentTargetID = 0;
-            currentTargetID = GetTargetCombatant().ID;
+            var targetCombatant  = GetTargetCombatant();
+            if(targetCombatant != null)
+            {
+                currentTargetID = targetCombatant.ID;
+            }
+            else
+            {
+                currentTargetID = 0;
+            }
             //
             for (int i = 0; i < num; i++)
             {
