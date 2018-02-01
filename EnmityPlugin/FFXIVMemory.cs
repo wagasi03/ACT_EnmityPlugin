@@ -87,7 +87,7 @@ namespace Tamagawa.EnmityPlugin
             List<Combatant> c;
             while (true)
             {
-                Thread.Sleep(200);
+                Thread.Sleep(125);
 
                 if (!this.validateProcess())
                 {
