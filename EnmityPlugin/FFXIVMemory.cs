@@ -441,7 +441,7 @@ namespace Tamagawa.EnmityPlugin
                 combatant.PosY = *(Single*)&p[offset + 8];
 
                 offset = (_mode == FFXIVClientMode.FFXIV_64) ? 5792 + 16 : 2520;
-                combatant.TargetID = *(uint*)&p[5796]; //5672? 5680? 5796? 6744? in 4.2
+                combatant.TargetID = *(uint*)&p[5680]; //5672? 5680? 5796? 6744? in 4.2
 
                 if (combatant.type == ObjectType.PC || combatant.type == ObjectType.Monster)
                 {
