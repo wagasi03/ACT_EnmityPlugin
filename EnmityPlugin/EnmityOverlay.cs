@@ -53,7 +53,8 @@ namespace Tamagawa.EnmityPlugin
                 if ((_memory == null && p != null) ||
                     (_memory != null && p != null && p.Id != _memory.process.Id))
                 {
-                    try {
+                    try
+                    {
                         _memory = new FFXIVMemory(this, p);
                     }
                     catch (Exception ex)
@@ -202,7 +203,8 @@ namespace Tamagawa.EnmityPlugin
             // なんかプロセスがおかしいとき
             if (_memory == null || _memory.validateProcess() == false)
             {
-                enmity.Target = new Combatant() {
+                enmity.Target = new Combatant()
+                {
                     Name = "Failed to scan memory.",
                     ID = 0,
                     MaxHP = 0,
@@ -272,7 +274,8 @@ namespace Tamagawa.EnmityPlugin
                 if (!this.Config.DisableAggroList)
                 {
                     enmity.AggroList = _memory.GetAggroList();
-                    if (this.Config.AggroListSortKey == "HateRate") {
+                    if (this.Config.AggroListSortKey == "HateRate")
+                    {
                         if (this.Config.AggroListSortDecend)
                         {
                             enmity.AggroList = enmity.AggroList.OrderByDescending(s => s.HateRate).ToList<AggroEntry>();
@@ -305,6 +308,26 @@ namespace Tamagawa.EnmityPlugin
                         }
                     }
                 }
+
+                // Status(バフデバフ) のOwnerチェック
+                if (enmity.Target != null && enmity.Target.Statuses != null) foreach (var x in enmity.Target.Statuses) { if (x.CasterID == mychar.ID) x.IsOwner = true; }
+                if (enmity.Hover != null && enmity.Hover.Statuses != null) foreach (var x in enmity.Hover.Statuses) { if (x.CasterID == mychar.ID) x.IsOwner = true; }
+                if (enmity.Focus != null && enmity.Focus.Statuses != null) foreach (var x in enmity.Focus.Statuses) { if (x.CasterID == mychar.ID) x.IsOwner = true; }
+                if (enmity.Anchor != null && enmity.Anchor.Statuses != null) foreach (var x in enmity.Anchor.Statuses) { if (x.CasterID == mychar.ID) x.IsOwner = true; }
+                if (enmity.AggroList != null)
+                {
+                    foreach (var x in enmity.AggroList)
+                    {
+                        if (x.Statuses != null)
+                        {
+                            foreach (var y in x.Statuses)
+                            {
+                                if (y.CasterID == mychar.ID) y.IsOwner = true;
+                            }
+                        }
+                    }
+                }
+
             }
             catch (Exception ex)
             {
@@ -342,7 +365,7 @@ namespace Tamagawa.EnmityPlugin
             }
             LogInfo(Messages.StartScanning);
             suppress_log = false;
-            timer.Start();            
+            timer.Start();
         }
 
         /// <summary>

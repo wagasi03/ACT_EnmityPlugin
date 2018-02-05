@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tamagawa.EnmityPlugin
 {
 
     public enum ObjectType : byte
     {
-        Unknown    = 0x00,
-        PC         = 0x01,
-        Monster    = 0x02,
-        NPC        = 0x03,
-        Aetheryte  = 0x05,
-        Gathering  = 0x06,
-        Minion     = 0x09
+        Unknown = 0x00,
+        PC = 0x01,
+        Monster = 0x02,
+        NPC = 0x03,
+        Aetheryte = 0x05,
+        Gathering = 0x06,
+        Minion = 0x09
     }
 
     public class Combatant
@@ -35,6 +36,8 @@ namespace Tamagawa.EnmityPlugin
         public int MaxMP;
         public short MaxTP;
         public short CurrentTP;
+
+        public List<Status> Statuses;
 
         public Single PosX;
         public Single PosY;
@@ -135,7 +138,7 @@ namespace Tamagawa.EnmityPlugin
         public string EnmityString => Enmity.ToString("##,#");
         public bool isPet => (OwnerID != 0);
     }
-  
+
     //// 敵視リストエントリ
     public class AggroEntry
     {
@@ -165,5 +168,24 @@ namespace Tamagawa.EnmityPlugin
 
         // Target of Enemy
         public EnmityEntry Target;
+
+        // Status
+        public List<Status> Statuses;
+    }
+
+    // バフデバフ情報
+    public class Status
+    {
+        //public Combatant SourceCombatant;
+        public short StatusID;
+        public string StatusName;
+        public byte Stacks;
+        public float Duration;
+        public uint CasterID;
+        public bool IsOwner;
+        public bool IsValid()
+        {
+            return StatusID > 0 && Duration <= 86400 && CasterID > 0;
+        }
     }
 }
