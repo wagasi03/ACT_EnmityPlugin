@@ -14,9 +14,7 @@ namespace Tamagawa.EnmityPlugin
             public MemoryScanException() : base(Messages.FailedToSigScan) { }
             public MemoryScanException(string message) : base(message) { }
             public MemoryScanException(string message, System.Exception inner) : base(message, inner) { }
-            protected MemoryScanException(System.Runtime.Serialization.SerializationInfo info,
-                System.Runtime.Serialization.StreamingContext context)
-            { }
+            protected MemoryScanException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
         }
 
         private Thread _thread;
@@ -482,6 +480,15 @@ namespace Tamagawa.EnmityPlugin
                             combatant.Statuses.Add(status);
                         }
                     }
+
+                    // Cast
+                    combatant.Casting = new Cast
+                    {
+                        ID = BitConverter.ToInt16(source, 6372),
+                        TargetID = BitConverter.ToUInt32(source, 6384),
+                        Progress = BitConverter.ToSingle(source, 6420),
+                        Time = BitConverter.ToSingle(source, 6424),
+                    };
                 }
                 else
                 {
@@ -492,6 +499,7 @@ namespace Tamagawa.EnmityPlugin
                     combatant.MaxTP =
                     combatant.CurrentTP = 0;
                     combatant.Statuses = new List<Status>();
+                    combatant.Casting = new Cast();
                 }
             }
             return combatant;

@@ -38,6 +38,7 @@ namespace Tamagawa.EnmityPlugin
         public short CurrentTP;
 
         public List<Status> Statuses;
+        public Cast Casting;
 
         public Single PosX;
         public Single PosY;
@@ -186,6 +187,17 @@ namespace Tamagawa.EnmityPlugin
         public bool IsValid()
         {
             return StatusID > 0 && Duration <= 86400 && CasterID > 0;
+        }
+    }
+    public class Cast
+    {
+        public short ID;
+        public uint TargetID;
+        public float Progress;
+        public float Time;
+        public bool IsValid()
+        {
+            return ID > 0 && TargetID > 0;
         }
     }
 }
