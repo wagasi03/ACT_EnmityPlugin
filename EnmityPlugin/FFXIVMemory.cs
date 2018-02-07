@@ -242,7 +242,7 @@ namespace Tamagawa.EnmityPlugin
         }
 
         /// <summary>
-        /// サークルターゲット情報を取得
+        /// アンカーターゲット情報を取得
         /// </summary>
         public Combatant GetAnchorCombatant()
         {
@@ -273,7 +273,7 @@ namespace Tamagawa.EnmityPlugin
             Combatant target = null;
             IntPtr address = IntPtr.Zero;
 
-            int offset = 0x78;
+            int offset = 0x60;
             byte[] source = GetByteArray(IntPtr.Add(targetAddress, offset), 128);
             unsafe
             {
