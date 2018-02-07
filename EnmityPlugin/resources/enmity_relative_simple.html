@@ -1,0 +1,48 @@
+﻿<html>
+<head>
+  <link rel="stylesheet" href="enmity.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/0.12.7/vue.min.js"></script>
+  <style>
+    .content {
+      display: flex;
+      flex-direction: row;
+    }
+    .name {
+      display: inline-block;
+      order: 1;
+      align-self: flex-start;
+      margin-right: auto;
+    }
+    .enmity {
+      flex-shrink: 0;
+      order: 2;
+      padding-left: 10px;
+      align-self: flex-end;
+    }
+    #target {
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body id="enmity" v-class="resize-handle: !locked">
+  <div v-if="updated" class="outer {{target.type != 2 ? 'hide' : ''}}">
+    <div class="inner">
+      <div class="background"></div>
+      <div>
+        <div id="target">
+          <span class="value">{{target.Name}}</span>
+        </div>
+        <div id="entries" class="box" v-repeat="e: entries">
+          <div class="content">
+            <span class="name {{e.isMe ? 'me' : '' }}">{{$index + 1}}.{{e | you}}</span>
+            <span class="enmity">{{e.RelativeEnmityString}}</span>
+          </div>
+          <div class="gauge {{e | jobclass}}" style="width: {{e.HateRate}}%" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="enmity.js"></script>
+</body>
+</html>
