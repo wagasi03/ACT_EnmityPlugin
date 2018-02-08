@@ -85,24 +85,28 @@ body {
 
 .box { position: relative; }
 
-.content {
-  display: flex;
-  flex-direction: row;
+
+#targetinfo .outer {
+  height: 100%;
+  padding: 10px;
 }
 
-.name {
-  display: inline-block;
-  order: 1;
-  align-self: flex-start;
-  margin-right: auto;
+#targetinfo .inner {
+  position: relative;
+  padding: 10px;
 }
 
-.enmity {
-  flex-shrink: 0;
-  order: 2;
-  padding-left: 10px;
-  align-self: flex-end;
+#targetinfo .inner .background {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-filter: blur(5px);
+  z-index: -1;
 }
+
 
 #target {
   border-bottom: 1px solid #DED7BE;
@@ -111,7 +115,6 @@ body {
   font-weight: 300;
   white-space: nowrap;
   padding: 2px;
-  overflow: hidden;
 }
 
 #target .name {
