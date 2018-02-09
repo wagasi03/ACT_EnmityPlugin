@@ -2,7 +2,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>enmity</title>
+  <title>enmity_relative</title>
   <link rel="stylesheet" href="css/enmity.css">
 </head>
 
@@ -27,7 +27,7 @@
         <!-- HP and Gauge area-->
         <div>
           <span class="header">HP: </span>
-          <span class="value">{{target.HPPercent}}% ({{target.CurrentHP}}/{{target.MaxHP}})</span>
+          <span class="value">{{target.HPPercent}}%&emsp;({{target.CurrentHP.toLocaleString()}}/{{target.MaxHP.toLocaleString()}})</span>
         </div>
         <!-- Time-to-Death and Distance area -->
         <div>
@@ -46,10 +46,10 @@
         <!-- Name -->
         <div class="content">
           <span class="name {{e.isMe ? 'me' : '' }}">{{$index + 1}}.{{e | you}}</span>
-          <span class="enmity">{{e.EnmityString}}</span>
+          <span class="enmity">{{e.RelativeEnmityString}}</span>
         </div>
         <!-- Gauge -->
-        <div class="gauge {{e | jobclass}}" style="width: {{e.HateRate}}%" />
+        <div class="gauge {{e | jobclass}}" style="width: {{e.HateRate}}%"></div>
       </div>
       <!-- end of Enmity Entries -->
 

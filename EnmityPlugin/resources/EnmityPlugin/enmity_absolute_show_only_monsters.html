@@ -2,7 +2,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>enmity_relative</title>
+  <title>enmity</title>
   <link rel="stylesheet" href="css/enmity.css">
 </head>
 
@@ -11,7 +11,7 @@
   <!-- outer -->
   <div class="outer {{hide ? 'hide' : ''}}">
     <!-- innner -->
-    <div v-if="updated" class="inner {{target.type == undefined 2 ? 'hide' : ''}}">
+    <div v-if="updated" class="inner {{target.type != 2 ? 'hide' : ''}}">
       <div class="background"></div>
 
       <!-- Target -->
@@ -42,14 +42,14 @@
       <!-- end of Target -->
 
       <!-- Enmity Entries (敵視情報) -->
-      <div id="entries" class="box {{target.type != 2 ? 'hide' : ''}}" v-repeat="e: entries">
+      <div id="entries" class="box" v-repeat="e: entries">
         <!-- Name -->
         <div class="content">
           <span class="name {{e.isMe ? 'me' : '' }}">{{$index + 1}}.{{e | you}}</span>
-          <span class="enmity">{{e.RelativeEnmityString}}</span>
+          <span class="enmity">{{e.EnmityString}}</span>
         </div>
         <!-- Gauge -->
-        <div class="gauge {{e | jobclass}}" style="width: {{e.HateRate}}%"></div>
+        <div class="gauge {{e | jobclass}}" style="width: {{e.HateRate}}%" />
       </div>
       <!-- end of Enmity Entries -->
 

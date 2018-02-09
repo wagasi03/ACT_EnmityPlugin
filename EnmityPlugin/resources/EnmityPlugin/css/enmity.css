@@ -124,7 +124,7 @@ body {
   position: absolute;
   display: block;
   bottom: 2px;
-  height: 2px;
+  height: 4px;
   z-index: -1;
 }
 
@@ -147,7 +147,7 @@ body {
 
 /* Enmity entries */
 #entries {
- padding: 2px;
+ padding: 0px 1px 1px 1px;
 }
 
 #entries .enmity {
@@ -172,7 +172,7 @@ body {
   position: absolute;
   display: block;
   bottom: 2px;
-  height: 3px;
+  height: 5px;
   z-index: -1;
 }
 
