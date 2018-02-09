@@ -97,3 +97,7 @@ var aggrolist = new Vue({
     }
   }
 });
+
+Number.prototype.format = function(char, cnt){
+  return (Array(cnt).fill(char).join("") + this.valueOf()).substr(-1*cnt); 
+}

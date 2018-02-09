@@ -94,7 +94,7 @@ td { text-align: right; }
  
 #combatants td {
   overflow: hidden;
-  white-space: nowrap;
+  /* white-space: nowrap; */
   text-overflow: ellipsis;
   max-width: 20ex;
   padding: 0px;
@@ -104,20 +104,28 @@ td { text-align: right; }
   border-bottom: 1px solid #DED7BE;
 }
 
-#combatants td.hate, td.target {
-  width: 5em;
+#combatants td.hate {
+  white-space: nowrap;
+  min-width: 55px;
+  width: 55px;
+}
+
+#combatants td.target {
+  min-width: 50px;
+  width: 50px;
 }
 
 #combatants td div.hate {
-  width: 5em;
+  width: 100%;
   margin: 1px 0px 1px 0px;
   padding: 1px 4px 1px 1px;
- } 
- #combatants td div.target {
-  width: 5em;
+} 
+ 
+#combatants td div.target {
+  width: 100%;
   margin: 1px 0px 1px 0px;
   padding: 1px 1px 1px 1px;
- } 
+} 
  
 #combatants td div.green, td.green {
  background-color: rgba(38, 214, 70, 0.75);
