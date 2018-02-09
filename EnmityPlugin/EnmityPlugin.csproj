@@ -202,10 +202,19 @@
     <Content Include="resources\EnmityPlugin\css\enmity.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="resources\EnmityPlugin\enmity.html">
+    <Content Include="resources\EnmityPlugin\css\targetinfo.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\EnmityPlugin\enmity_absolute.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\EnmityPlugin\enmity_absolute_show_only_monsters.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="resources\EnmityPlugin\enmity_relative.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\EnmityPlugin\enmity_relative_show_only_monsters.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="resources\EnmityPlugin\enmity_relative_simple.html">
@@ -218,6 +227,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="resources\EnmityPlugin\js\enmity.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\EnmityPlugin\js\targetinfo.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\EnmityPlugin\js\vue-0.12.7.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="resources\EnmityPlugin\js\vue-0.12.7.min.js">
