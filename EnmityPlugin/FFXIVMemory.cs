@@ -374,6 +374,7 @@ namespace Tamagawa.EnmityPlugin
                 combatant.PosX = *(Single*)&p[offset];
                 combatant.PosZ = *(Single*)&p[offset + 4];
                 combatant.PosY = *(Single*)&p[offset + 8];
+                combatant.Heading = *(Single*)&p[offset + 16];
 
                 combatant.TargetID = *(uint*)&p[5680];
 
