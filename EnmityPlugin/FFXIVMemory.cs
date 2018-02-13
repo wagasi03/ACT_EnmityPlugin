@@ -690,87 +690,107 @@ namespace Tamagawa.EnmityPlugin
         /// <returns>the pointer addresses</returns>
         private List<IntPtr> SigScan(string pattern, int offset = 0, bool bRIP = false)
         {
-            IntPtr arg_05_0 = IntPtr.Zero;
             if (pattern == null || pattern.Length % 2 != 0)
             {
                 return new List<IntPtr>();
             }
 
-            byte?[] array = new byte?[pattern.Length / 2];
+            // 1byte = 2char
+            byte?[] patternByteArray = new byte?[pattern.Length / 2];
+
+            // Convert Pattern to "Array of Byte"
             for (int i = 0; i < pattern.Length / 2; i++)
             {
                 string text = pattern.Substring(i * 2, 2);
                 if (text == "??")
                 {
-                    array[i] = null;
+                    patternByteArray[i] = null;
                 }
                 else
                 {
-                    array[i] = new byte?(Convert.ToByte(text, 16));
+                    patternByteArray[i] = new byte?(Convert.ToByte(text, 16));
                 }
             }
 
-            int num = 65536;
-
             int moduleMemorySize = _process.MainModule.ModuleMemorySize;
             IntPtr baseAddress = _process.MainModule.BaseAddress;
-            IntPtr intPtr = IntPtr.Add(baseAddress, moduleMemorySize);
-            IntPtr intPtr2 = baseAddress;
-            byte[] array2 = new byte[num];
+            IntPtr intPtr_EndOfModuleMemory = IntPtr.Add(baseAddress, moduleMemorySize);
+            IntPtr intPtr_Scannning = baseAddress;
+
+            int splitSizeOfMemory = 65536;
+            byte[] splitMemoryArray = new byte[splitSizeOfMemory];
+
             List<IntPtr> list = new List<IntPtr>();
-            while (intPtr2.ToInt64() < intPtr.ToInt64())
+
+            // while loop for scan all memory 
+            while (intPtr_Scannning.ToInt64() < intPtr_EndOfModuleMemory.ToInt64())
             {
-                IntPtr zero = IntPtr.Zero;
-                IntPtr nSize = new IntPtr(num);
-                if (IntPtr.Add(intPtr2, num).ToInt64() > intPtr.ToInt64())
+                IntPtr nSize = new IntPtr(splitSizeOfMemory);
+
+                // if remaining memory size is less than splitSize, change nSize to remaining size
+                if (IntPtr.Add(intPtr_Scannning, splitSizeOfMemory).ToInt64() > intPtr_EndOfModuleMemory.ToInt64())
                 {
-                    nSize = (IntPtr)(intPtr.ToInt64() - intPtr2.ToInt64());
+                    nSize = (IntPtr)(intPtr_EndOfModuleMemory.ToInt64() - intPtr_Scannning.ToInt64());
                 }
-                if (NativeMethods.ReadProcessMemory(_process.Handle, intPtr2, array2, nSize, ref zero))
+
+                IntPtr intPtr_NumberOfBytesRead = IntPtr.Zero;
+
+                // read memory
+                if (NativeMethods.ReadProcessMemory(_process.Handle, intPtr_Scannning, splitMemoryArray, nSize, ref intPtr_NumberOfBytesRead))
                 {
-                    int num2 = 0;
-                    while ((long)num2 < zero.ToInt64() - (long)array.Length - (long)offset - 4L + 1L)
+                    int num = 0;
+
+                    // slide start point byte bu byte, check with patternByteArray
+                    while ((long)num < intPtr_NumberOfBytesRead.ToInt64() - (long)patternByteArray.Length - (long)offset)
                     {
-                        int num3 = 0;
-                        for (int j = 0; j < array.Length; j++)
+                        int matchCount = 0;
+                        for (int j = 0; j < patternByteArray.Length; j++)
                         {
-                            if (!array[j].HasValue)
+                            // pattern "??" have a null value. in this case, skip the check.
+                            if (!patternByteArray[j].HasValue)
                             {
-                                num3++;
+                                matchCount++;
                             }
                             else
                             {
-                                if (array[j].Value != array2[num2 + j])
+                                if (patternByteArray[j].Value != splitMemoryArray[num + j])
                                 {
                                     break;
                                 }
-                                num3++;
+                                matchCount++;
                             }
                         }
-                        if (num3 == array.Length)
+
+                        // if all bytes are match, it means "the pattern found"
+                        if (matchCount == patternByteArray.Length)
                         {
                             IntPtr item;
                             if (bRIP)
                             {
-                                item = new IntPtr(BitConverter.ToInt32(array2, num2 + array.Length + offset));
-                                item = new IntPtr(intPtr2.ToInt64() + (long)num2 + (long)array.Length + 4L + item.ToInt64());
+                                item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num + patternByteArray.Length + offset));
+                                item = new IntPtr(intPtr_Scannning.ToInt64() + (long)num + (long)patternByteArray.Length + 4L + item.ToInt64());
                             }
                             else if (_mode == FFXIVClientMode.FFXIV_64)
                             {
-                                item = new IntPtr(BitConverter.ToInt64(array2, num2 + array.Length + offset));
+                                item = new IntPtr(BitConverter.ToInt64(splitMemoryArray, num + patternByteArray.Length + offset));
                                 item = new IntPtr(item.ToInt64());
                             }
                             else
                             {
-                                item = new IntPtr(BitConverter.ToInt32(array2, num2 + array.Length + offset));
+                                item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num + patternByteArray.Length + offset));
                                 item = new IntPtr(item.ToInt64());
                             }
-                            list.Add(item);
+
+                            // add the item if not contains already
+                            if (item != IntPtr.Zero && !list.Contains(item))
+                            {
+                                list.Add(item);
+                            }
                         }
-                        num2++;
+                        num++;
                     }
                 }
-                intPtr2 = IntPtr.Add(intPtr2, num);
+                intPtr_Scannning = IntPtr.Add(intPtr_Scannning, splitSizeOfMemory - patternByteArray.Length - offset);
             }
             return list;
         }
