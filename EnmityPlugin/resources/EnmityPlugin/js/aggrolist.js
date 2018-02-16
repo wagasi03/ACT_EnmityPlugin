@@ -84,6 +84,19 @@ var aggrolist = new Vue({
           } else {
             c.hatecolor = 'green';
           }
+          
+          if(typeof(statusArray) != "undefined") {
+            for (var j=0; j<c.Statuses.length; j++) {
+              if(statusArray[c.Statuses[j].StatusID] != undefined) {
+                c.Statuses[j].iconFileName = statusArray[c.Statuses[j].StatusID].iconFileName;
+                c.Statuses[j].name = statusArray[c.Statuses[j].StatusID].name;
+              } else {
+                c.Statuses[j].iconFileName = "0.png"
+                c.Statuses[j].name = c.Statuses[j].StatusID;
+              }
+            }
+          }
+          
           this.combatants.push(c);
         }
       }
