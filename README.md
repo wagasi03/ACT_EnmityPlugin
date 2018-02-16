@@ -4,15 +4,17 @@
 
 ![sample](https://raw.githubusercontent.com/TamanegiMage/ACT_EnmityPlugin/master/sample.png) 
 
-また、敵視リストを拡張した AggroList も利用できます。
+## サンプルイメージ
 
+![sample](https://raw.githubusercontent.com/TamanegiMage/ACT_EnmityPlugin/master/sample_emity_absolute.jpg) 
+![sample](https://raw.githubusercontent.com/TamanegiMage/ACT_EnmityPlugin/master/sample_enmity_relative.jpg) 
 ![sample](https://raw.githubusercontent.com/TamanegiMage/ACT_EnmityPlugin/master/sample_aggrolist.jpg) 
-
-[OverlayPlugin](https://github.com/hibiyasleep/OverlayPlugin) のアドオンとして動作するため、 [OverlayPlugin](https://github.com/hibiyasleep/OverlayPlugin) の導入が必要です。
 
 ## ダウンロード
 
 [リリースページ](https://github.com/TamanegiMage/ACT_EnmityPlugin/releases)よりダウンロードできます。
+
+また、[OverlayPlugin](https://github.com/hibiyasleep/OverlayPlugin) のアドオンとして動作するため、 [OverlayPlugin](https://github.com/hibiyasleep/OverlayPlugin) の導入が必要です。
 
 ## ドキュメント
 
