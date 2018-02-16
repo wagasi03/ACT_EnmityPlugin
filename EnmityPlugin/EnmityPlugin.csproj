@@ -196,10 +196,16 @@
     <Content Include="resources\EnmityPlugin\aggrolist.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="resources\EnmityPlugin\aggrolist_with_status.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="resources\EnmityPlugin\css\aggrolist.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="resources\EnmityPlugin\css\enmity.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\EnmityPlugin\css\handle.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="resources\EnmityPlugin\css\targetinfo.css">
