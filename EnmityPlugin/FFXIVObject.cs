@@ -43,6 +43,7 @@ namespace Tamagawa.EnmityPlugin
         public Single PosX;
         public Single PosY;
         public Single PosZ;
+        public Single Heading;
         public byte EffectiveDistance;
         public string Distance;
         public string HorizontalDistance;

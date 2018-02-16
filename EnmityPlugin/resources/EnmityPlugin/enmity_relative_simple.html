@@ -1,0 +1,55 @@
+﻿<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>enmity_relative_simple</title>
+  <link rel="stylesheet" href="css/enmity.css">
+</head>
+
+<body id="enmity" v-class="resize-handle: !locked">
+
+  <!-- outer -->
+  <div class="outer {{hide ? 'hide' : ''}}">
+    <!-- innner -->
+    <div v-if="updated" class="inner {{target.type != 2 ? 'hide' : ''}}">
+      <div class="background"></div>
+
+      <!-- Target -->
+      <div>
+        <div id="target">
+          <span class="value">{{target.Name}}</span>
+        </div>
+      </div>
+      <!-- end of Target -->
+
+      <!-- Enmity Entries (敵視情報) -->
+      <div>
+        <div id="entries" class="box" v-repeat="e: entries">
+          <!-- Name -->
+          <div class="content">
+            <span class="name {{e.isMe ? 'me' : '' }}">{{$index + 1}}.{{e | you}}</span>
+            <span class="enmity">{{e.RelativeEnmityString}}</span>
+          </div>
+          <!-- Gauge -->
+          <div class="gauge {{e | jobclass}}" style="width: {{e.HateRate}}%"></div>
+        </div>
+      </div>
+      <!-- end of Enmity Entries -->
+
+    </div>
+    <!-- end of inner -->
+  </div>
+  <!-- end of outer -->
+
+  <!-- load js -->
+  <script src="js/vue-0.12.7.min.js"></script>
+  <script src="js/enmity.js"></script>
+
+  <!-- FOR DEMO/DEBUG USE -->
+  <!--
+  <script src="js/demodata.js"></script>
+  <script>Demo(enmity);</script>
+  -->
+</body>
+
+</html>

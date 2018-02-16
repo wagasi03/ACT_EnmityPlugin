@@ -19,7 +19,7 @@ namespace Tamagawa.EnmityPlugin
             : base(name)
         {
             this._scanInterval = 100;
-            this.Url = new Uri(System.IO.Path.Combine(OverlayAddonMain.ResourcesDirectory, "enmity.html")).ToString();
+            this.Url = new Uri(System.IO.Path.Combine(OverlayAddonMain.ResourcesDirectory, @"EnmityPlugin\enmity_absolute.html")).ToString();
             this._followFFXIVPlugin = false;
             this._disableTarget = false;
             this._disableAggroList = false;

@@ -21,12 +21,14 @@ namespace Tamagawa.EnmityPlugin
         internal List<Combatant> Combatants { get; private set; }
         internal object CombatantsLock => new object();
 
-        private const string charmapSignature64 = "488b420848c1e8033da701000077248bc0488d0d"; // 4.2
-        private const string targetSignature64 = "41bc000000e041bd01000000493bc47555488d0d"; // 4.2
-        private const string enmitySignature64 = "83f9ff7412448b048e8bd3488d0d"; // 4.2
-        private const int charmapOffset64 = 0; // 4.2
-        private const int targetOffset64 = 192; //4.2
-        private const int enmityOffset64 = -4648; // 4.2
+        private const string charmapSignature = "488b420848c1e8033da701000077248bc0488d0d";
+        private const string targetSignature = "41bc000000e041bd01000000493bc47555488d0d";
+        private const string enmitySignature = "83f9ff7412448b048e8bd3488d0d";
+        private const int charmapOffset = 0;
+        private const int targetOffset = 192;
+        private const int enmityOffset = -4648;
+
+        private const int combatantDataSize = 16192; //0x3F40
 
         private EnmityOverlay _overlay;
         private Process _process;
@@ -57,12 +59,14 @@ namespace Tamagawa.EnmityPlugin
             overlay.LogDebug("Attatching process: {0} ({1})",
                 process.Id, (_mode == FFXIVClientMode.FFXIV_64 ? "dx11" : "other"));
 
-            this.getPointerAddress();
+            this.GetPointerAddress();
 
             Combatants = new List<Combatant>();
 
-            _thread = new Thread(new ThreadStart(doScanCombatants));
-            _thread.IsBackground = true;
+            _thread = new Thread(new ThreadStart(DoScanCombatants))
+            {
+                IsBackground = true
+            };
             _thread.Start();
 
             overlay.LogInfo("Attatched process successfully, pid: {0} ({1})",
@@ -75,14 +79,14 @@ namespace Tamagawa.EnmityPlugin
             _thread.Abort();
         }
 
-        private void doScanCombatants()
+        private void DoScanCombatants()
         {
             List<Combatant> c;
             while (true)
             {
                 Thread.Sleep(125);
 
-                if (!this.validateProcess())
+                if (!this.ValidateProcess())
                 {
                     Thread.Sleep(1000);
                     return;
@@ -103,7 +107,7 @@ namespace Tamagawa.EnmityPlugin
             FFXIV_64 = 2,
         }
 
-        public Process process
+        public Process Process
         {
             get
             {
@@ -111,7 +115,7 @@ namespace Tamagawa.EnmityPlugin
             }
         }
 
-        public bool validateProcess()
+        public bool ValidateProcess()
         {
             if (_process == null)
             {
@@ -125,7 +129,7 @@ namespace Tamagawa.EnmityPlugin
                 enmityAddress == IntPtr.Zero ||
                 targetAddress == IntPtr.Zero)
             {
-                return getPointerAddress();
+                return GetPointerAddress();
             }
             return true;
         }
@@ -133,68 +137,51 @@ namespace Tamagawa.EnmityPlugin
         /// <summary>
         /// 各ポインタのアドレスを取得
         /// </summary>
-        private bool getPointerAddress()
+        private bool GetPointerAddress()
         {
             bool success = true;
             bool bRIP = true;
 
-            string charmapSignature = charmapSignature64;
-            string targetSignature = targetSignature64;
-            string enmitySignature = enmitySignature64;
-            int targetOffset = targetOffset64;
-            int charmapOffset = charmapOffset64;
-            int enmityOffset = enmityOffset64;
             List<string> fail = new List<string>();
 
             /// CHARMAP
             List<IntPtr> list = SigScan(charmapSignature, 0, bRIP);
-            if (list == null || list.Count == 0)
-            {
-                charmapAddress = IntPtr.Zero;
-            }
-            if (list.Count == 1)
+            if (list != null && list.Count == 1)
             {
                 charmapAddress = list[0] + charmapOffset;
             }
-            if (charmapAddress == IntPtr.Zero)
+            else
             {
+                charmapAddress = IntPtr.Zero;
                 fail.Add(nameof(charmapAddress));
                 success = false;
             }
 
             // ENMITY
-            //enmityAddress = IntPtr.Add(charmapAddress, enmityOffset);
-            //aggroAddress = IntPtr.Add(enmityAddress, 0x900 + 8);
-
             list = SigScan(enmitySignature, 0, bRIP);
-            if (list == null || list.Count == 0)
-            {
-                enmityAddress = IntPtr.Zero;
-            }
-            if (list.Count == 1)
+            if (list != null && list.Count == 1)
             {
                 enmityAddress = list[0] + enmityOffset;
-                aggroAddress = IntPtr.Add(enmityAddress, 0x900 + 8);
+                aggroAddress = IntPtr.Add(enmityAddress, 2312); // Offset 0x900 + 8
             }
-            if (enmityAddress == IntPtr.Zero)
+            else
             {
+                enmityAddress = IntPtr.Zero;
+                aggroAddress = IntPtr.Zero;
                 fail.Add(nameof(enmityAddress));
+                fail.Add(nameof(aggroAddress));
                 success = false;
             }
-            aggroAddress = IntPtr.Add(enmityAddress, 0x900 + 8);
 
             /// TARGET
             list = SigScan(targetSignature, 0, bRIP);
-            if (list == null || list.Count == 0)
-            {
-                targetAddress = IntPtr.Zero;
-            }
-            if (list.Count == 1)
+            if (list != null && list.Count == 1)
             {
                 targetAddress = list[0] + targetOffset;
             }
-            if (targetAddress == IntPtr.Zero)
+            else
             {
+                targetAddress = IntPtr.Zero;
                 fail.Add(nameof(targetAddress));
                 success = false;
             }
@@ -234,7 +221,7 @@ namespace Tamagawa.EnmityPlugin
                 return null;
             }
 
-            source = GetByteArray(address, 0x3F40);
+            source = GetByteArray(address, combatantDataSize);
             target = GetCombatantFromByteArray(source);
             return target;
         }
@@ -248,14 +235,14 @@ namespace Tamagawa.EnmityPlugin
             IntPtr address = (IntPtr)GetUInt64(charmapAddress);
             if (address.ToInt64() > 0)
             {
-                byte[] source = GetByteArray(address, 0x3F40);
+                byte[] source = GetByteArray(address, combatantDataSize);
                 self = GetCombatantFromByteArray(source);
             }
             return self;
         }
 
         /// <summary>
-        /// サークルターゲット情報を取得
+        /// アンカーターゲット情報を取得
         /// </summary>
         public Combatant GetAnchorCombatant()
         {
@@ -273,7 +260,7 @@ namespace Tamagawa.EnmityPlugin
                 return null;
             }
 
-            source = GetByteArray(address, 0x3F40);
+            source = GetByteArray(address, combatantDataSize);
             target = GetCombatantFromByteArray(source);
             return target;
         }
@@ -286,7 +273,7 @@ namespace Tamagawa.EnmityPlugin
             Combatant target = null;
             IntPtr address = IntPtr.Zero;
 
-            int offset = 0x78;
+            int offset = 0x60;
             byte[] source = GetByteArray(IntPtr.Add(targetAddress, offset), 128);
             unsafe
             {
@@ -297,7 +284,7 @@ namespace Tamagawa.EnmityPlugin
                 return null;
             }
 
-            source = GetByteArray(address, 0x3F40);
+            source = GetByteArray(address, combatantDataSize);
             target = GetCombatantFromByteArray(source);
             return target;
         }
@@ -321,7 +308,7 @@ namespace Tamagawa.EnmityPlugin
                 return null;
             }
 
-            source = GetByteArray(address, 0x3F40);
+            source = GetByteArray(address, combatantDataSize);
             target = GetCombatantFromByteArray(source);
             return target;
         }
@@ -345,7 +332,7 @@ namespace Tamagawa.EnmityPlugin
 
                 if (!(p == IntPtr.Zero))
                 {
-                    byte[] c = GetByteArray(p, 0x3F40);
+                    byte[] c = GetByteArray(p, combatantDataSize);
                     Combatant combatant = GetCombatantFromByteArray(c);
                     if (combatant.type != ObjectType.PC && combatant.type != ObjectType.Monster)
                     {
@@ -373,41 +360,44 @@ namespace Tamagawa.EnmityPlugin
             {
                 //combatant.BoA = BitConverter.ToString(source);
 
-                combatant.Name = GetStringFromBytes(source, 0x30);
-                combatant.ID = *(uint*)&p[0x74];
-                combatant.OwnerID = *(uint*)&p[0x84];
+                combatant.Name = GetStringFromBytes(source, 48);
+                combatant.ID = *(uint*)&p[116];
+                combatant.OwnerID = *(uint*)&p[132];
                 if (combatant.OwnerID == 3758096384u)
                 {
                     combatant.OwnerID = 0u;
                 }
-                combatant.type = (ObjectType)p[0x8C];
-                combatant.EffectiveDistance = p[0x92];
+                combatant.type = (ObjectType)p[140];
+                combatant.EffectiveDistance = p[146];
 
-                offset = 0xA0;
+                offset = 160;
                 combatant.PosX = *(Single*)&p[offset];
                 combatant.PosZ = *(Single*)&p[offset + 4];
                 combatant.PosY = *(Single*)&p[offset + 8];
+                combatant.Heading = *(Single*)&p[offset + 16];
 
-                offset = 5792 + 16;
-                combatant.TargetID = *(uint*)&p[5680]; //5672? 5680? 5796? 6744? in 4.2
+                combatant.TargetID = *(uint*)&p[5680];
 
+                offset = 5808;
                 if (combatant.type == ObjectType.PC || combatant.type == ObjectType.Monster)
                 {
-                    combatant.Job = p[offset + 0x3E];
-                    combatant.Level = p[offset + 0x40];
                     combatant.CurrentHP = *(int*)&p[offset + 8];
                     combatant.MaxHP = *(int*)&p[offset + 12];
                     combatant.CurrentMP = *(int*)&p[offset + 16];
                     combatant.MaxMP = *(int*)&p[offset + 20];
                     combatant.CurrentTP = *(short*)&p[offset + 24];
                     combatant.MaxTP = 1000;
+                    combatant.Job = p[offset + 62];
+                    combatant.Level = p[offset + 64];
 
                     // Status aka Buff,Debuff
                     combatant.Statuses = new List<Status>();
                     const int StatusEffectOffset = 5992;
                     const int statusSize = 12;
+
                     int statusCountLimit = 60;
                     if (combatant.type == ObjectType.PC) statusCountLimit = 30;
+
                     var statusesSource = new byte[statusCountLimit * statusSize];
                     Buffer.BlockCopy(source, StatusEffectOffset, statusesSource, 0, statusCountLimit * statusSize);
                     for (var i = 0; i < statusCountLimit; i++)
@@ -432,10 +422,10 @@ namespace Tamagawa.EnmityPlugin
                     // Cast
                     combatant.Casting = new Cast
                     {
-                        ID = BitConverter.ToInt16(source, 6372),
-                        TargetID = BitConverter.ToUInt32(source, 6384),
-                        Progress = BitConverter.ToSingle(source, 6420),
-                        Time = BitConverter.ToSingle(source, 6424),
+                        ID = *(short*)&p[6372],
+                        TargetID = *(uint*)&p[6384],
+                        Progress = *(Single*)&p[6420],
+                        Time = *(Single*)&p[6424],
                     };
                 }
                 else
@@ -700,87 +690,107 @@ namespace Tamagawa.EnmityPlugin
         /// <returns>the pointer addresses</returns>
         private List<IntPtr> SigScan(string pattern, int offset = 0, bool bRIP = false)
         {
-            IntPtr arg_05_0 = IntPtr.Zero;
             if (pattern == null || pattern.Length % 2 != 0)
             {
                 return new List<IntPtr>();
             }
 
-            byte?[] array = new byte?[pattern.Length / 2];
+            // 1byte = 2char
+            byte?[] patternByteArray = new byte?[pattern.Length / 2];
+
+            // Convert Pattern to "Array of Byte"
             for (int i = 0; i < pattern.Length / 2; i++)
             {
                 string text = pattern.Substring(i * 2, 2);
                 if (text == "??")
                 {
-                    array[i] = null;
+                    patternByteArray[i] = null;
                 }
                 else
                 {
-                    array[i] = new byte?(Convert.ToByte(text, 16));
+                    patternByteArray[i] = new byte?(Convert.ToByte(text, 16));
                 }
             }
 
-            int num = 65536;
-
             int moduleMemorySize = _process.MainModule.ModuleMemorySize;
             IntPtr baseAddress = _process.MainModule.BaseAddress;
-            IntPtr intPtr = IntPtr.Add(baseAddress, moduleMemorySize);
-            IntPtr intPtr2 = baseAddress;
-            byte[] array2 = new byte[num];
+            IntPtr intPtr_EndOfModuleMemory = IntPtr.Add(baseAddress, moduleMemorySize);
+            IntPtr intPtr_Scannning = baseAddress;
+
+            int splitSizeOfMemory = 65536;
+            byte[] splitMemoryArray = new byte[splitSizeOfMemory];
+
             List<IntPtr> list = new List<IntPtr>();
-            while (intPtr2.ToInt64() < intPtr.ToInt64())
+
+            // while loop for scan all memory 
+            while (intPtr_Scannning.ToInt64() < intPtr_EndOfModuleMemory.ToInt64())
             {
-                IntPtr zero = IntPtr.Zero;
-                IntPtr nSize = new IntPtr(num);
-                if (IntPtr.Add(intPtr2, num).ToInt64() > intPtr.ToInt64())
+                IntPtr nSize = new IntPtr(splitSizeOfMemory);
+
+                // if remaining memory size is less than splitSize, change nSize to remaining size
+                if (IntPtr.Add(intPtr_Scannning, splitSizeOfMemory).ToInt64() > intPtr_EndOfModuleMemory.ToInt64())
                 {
-                    nSize = (IntPtr)(intPtr.ToInt64() - intPtr2.ToInt64());
+                    nSize = (IntPtr)(intPtr_EndOfModuleMemory.ToInt64() - intPtr_Scannning.ToInt64());
                 }
-                if (NativeMethods.ReadProcessMemory(_process.Handle, intPtr2, array2, nSize, ref zero))
+
+                IntPtr intPtr_NumberOfBytesRead = IntPtr.Zero;
+
+                // read memory
+                if (NativeMethods.ReadProcessMemory(_process.Handle, intPtr_Scannning, splitMemoryArray, nSize, ref intPtr_NumberOfBytesRead))
                 {
-                    int num2 = 0;
-                    while ((long)num2 < zero.ToInt64() - (long)array.Length - (long)offset - 4L + 1L)
+                    int num = 0;
+
+                    // slide start point byte bu byte, check with patternByteArray
+                    while ((long)num < intPtr_NumberOfBytesRead.ToInt64() - (long)patternByteArray.Length - (long)offset)
                     {
-                        int num3 = 0;
-                        for (int j = 0; j < array.Length; j++)
+                        int matchCount = 0;
+                        for (int j = 0; j < patternByteArray.Length; j++)
                         {
-                            if (!array[j].HasValue)
+                            // pattern "??" have a null value. in this case, skip the check.
+                            if (!patternByteArray[j].HasValue)
                             {
-                                num3++;
+                                matchCount++;
                             }
                             else
                             {
-                                if (array[j].Value != array2[num2 + j])
+                                if (patternByteArray[j].Value != splitMemoryArray[num + j])
                                 {
                                     break;
                                 }
-                                num3++;
+                                matchCount++;
                             }
                         }
-                        if (num3 == array.Length)
+
+                        // if all bytes are match, it means "the pattern found"
+                        if (matchCount == patternByteArray.Length)
                         {
                             IntPtr item;
                             if (bRIP)
                             {
-                                item = new IntPtr(BitConverter.ToInt32(array2, num2 + array.Length + offset));
-                                item = new IntPtr(intPtr2.ToInt64() + (long)num2 + (long)array.Length + 4L + item.ToInt64());
+                                item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num + patternByteArray.Length + offset));
+                                item = new IntPtr(intPtr_Scannning.ToInt64() + (long)num + (long)patternByteArray.Length + 4L + item.ToInt64());
                             }
                             else if (_mode == FFXIVClientMode.FFXIV_64)
                             {
-                                item = new IntPtr(BitConverter.ToInt64(array2, num2 + array.Length + offset));
+                                item = new IntPtr(BitConverter.ToInt64(splitMemoryArray, num + patternByteArray.Length + offset));
                                 item = new IntPtr(item.ToInt64());
                             }
                             else
                             {
-                                item = new IntPtr(BitConverter.ToInt32(array2, num2 + array.Length + offset));
+                                item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num + patternByteArray.Length + offset));
                                 item = new IntPtr(item.ToInt64());
                             }
-                            list.Add(item);
+
+                            // add the item if not contains already
+                            if (item != IntPtr.Zero && !list.Contains(item))
+                            {
+                                list.Add(item);
+                            }
                         }
-                        num2++;
+                        num++;
                     }
                 }
-                intPtr2 = IntPtr.Add(intPtr2, num);
+                intPtr_Scannning = IntPtr.Add(intPtr_Scannning, splitSizeOfMemory - patternByteArray.Length - offset);
             }
             return list;
         }

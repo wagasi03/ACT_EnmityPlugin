@@ -356,7 +356,7 @@ namespace Tamagawa.EnmityPlugin
                 string s = ((string)this.comboProcessList.SelectedItem) ?? "";
                 int processID = 0;
                 int.TryParse(s, out processID);
-                this.overlay.changeProcessId(processID);
+                this.overlay.ChangeProcessId(processID);
             }
         }
 

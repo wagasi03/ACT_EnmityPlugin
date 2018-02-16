@@ -32,7 +32,7 @@ namespace Tamagawa.EnmityPlugin
             base.Dispose();
         }
 
-        public void changeProcessId(int processId)
+        public void ChangeProcessId(int processId)
         {
             lock (_lock)
             {
@@ -51,7 +51,7 @@ namespace Tamagawa.EnmityPlugin
                 }
 
                 if ((_memory == null && p != null) ||
-                    (_memory != null && p != null && p.Id != _memory.process.Id))
+                    (_memory != null && p != null && p.Id != _memory.Process.Id))
                 {
                     try
                     {
@@ -101,7 +101,7 @@ namespace Tamagawa.EnmityPlugin
         /// <summary>
         /// プロセスの有効性をチェック
         /// </summary>
-        private void checkProcessId()
+        private void CheckProcessId()
         {
             try
             {
@@ -111,7 +111,7 @@ namespace Tamagawa.EnmityPlugin
                     if (FFXIVPluginHelper.Instance != null)
                     {
                         p = FFXIVPluginHelper.GetFFXIVProcess;
-                        if (p == null || (_memory != null && _memory.process.Id != p.Id))
+                        if (p == null || (_memory != null && _memory.Process.Id != p.Id))
                         {
                             _memory?.Dispose();
                             _memory = null;
@@ -121,9 +121,9 @@ namespace Tamagawa.EnmityPlugin
 
                 if (_memory == null)
                 {
-                    changeProcessId(0);
+                    ChangeProcessId(0);
                 }
-                else if (_memory.validateProcess())
+                else if (_memory.ValidateProcess())
                 {
                     // スキャン間隔をもどす
                     if (timer.Interval != this.Config.ScanInterval)
@@ -154,7 +154,7 @@ namespace Tamagawa.EnmityPlugin
             try
             {
                 // プロセスチェック
-                checkProcessId();
+                CheckProcessId();
 
                 if (_memory == null)
                 {
@@ -197,11 +197,13 @@ namespace Tamagawa.EnmityPlugin
             Combatant mychar;
 
             // Overlay に渡すオブジェクト
-            EnmityObject enmity = new EnmityObject();
-            enmity.Entries = new List<EnmityEntry>();
+            EnmityObject enmity = new EnmityObject
+            {
+                Entries = new List<EnmityEntry>()
+            };
 
             // なんかプロセスがおかしいとき
-            if (_memory == null || _memory.validateProcess() == false)
+            if (_memory == null || _memory.ValidateProcess() == false)
             {
                 enmity.Target = new Combatant()
                 {

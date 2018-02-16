@@ -1,0 +1,52 @@
+﻿<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>targetinfo</title>
+  <link rel="stylesheet" href="css/targetinfo.css">
+</head>
+
+<body id="targetinfo" v-class="resize-handle: !locked">
+  <!-- outer -->
+  <div class="outer {{hide ? 'hide' : ''}}">
+    <!-- innner -->
+    <div v-if="updated" class="inner">
+      <div class="background"></div>
+
+      <!-- Target (repeat) -->
+      <div id="target" v-repeat="t: targets">
+        <div class="box">
+          <div class="gauge {{t | hpcolor}}" style="width: {{t.HPPercent}}%"></div>
+          <div class="name">
+            <span class="header">{{t.Key}}: </span>
+            <span class="value">{{t.Name}}</span>
+          </div>
+        </div>
+        <div>
+          <span class="header">HP: </span>
+          <span class="value">{{t.HPPercent}}% ({{t.CurrentHP}}/{{t.MaxHP}})</span>
+          <div style="float: right">
+            <span class="header">距離: </span>
+            <span class="value">{{t.Distance}}m ({{t.EffectiveDistance}}m)</span>
+          </div>
+        </div>
+      </div>
+      <!-- end of Target (repeat) -->
+
+    </div>
+    <!-- inner -->
+  </div>
+  <!-- outer -->
+
+  <!-- load js -->
+  <script src="js/vue-0.12.7.min.js"></script>
+  <script src="js/targetinfo.js"></script>
+
+  <!-- FOR DEMO/DEBUG USE -->
+  <!--
+  <script src="js/demodata.js"></script>
+  <script>Demo(targetinfo);</script>
+  -->
+</body>
+
+</html>

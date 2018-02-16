@@ -13,18 +13,32 @@ namespace ResourceDownloader
 {
     class Program
     {
-        const float WEB_ACCESS_RATE_LIMIT = 4.0F;
+        const float WEB_ACCESS_RATE_LIMIT = 5.0F;
 
         static void Main(string[] args)
         {
+            string opt = String.Empty;
+            if(args.Length > 0)
+            {
+                opt = args[0];
+            }
+
             DownloadStatusData();
-            Console.WriteLine("To exit application, press \"Enter\".");
-            Console.ReadLine();
+
+            if (opt == "/y" || opt == "/Y")
+            {
+                Console.WriteLine("");
+            }
+            else
+            {
+                Console.WriteLine("To exit application, press \"Enter\".");
+                Console.ReadLine();
+            }
         }
 
         static void DownloadStatusData()
         {
-            string jsonPath = @"resources\json\status";
+            string jsonPath = @"resources\EnmityPlugin\json\status";
             if (!Directory.Exists(jsonPath))
             {
                 try
@@ -39,7 +53,7 @@ namespace ResourceDownloader
             }
 
 
-            string imgPath = @"resources\images\status";
+            string imgPath = @"resources\EnmityPlugin\images\status";
             if (!Directory.Exists(imgPath))
             {
                 try
@@ -55,51 +69,139 @@ namespace ResourceDownloader
 
             string escapedJson = String.Empty;
 
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            float downloadRate = 0.0F;
+            int count = 0;
+
             using (WebClient webClient = new WebClient())
             {
                 try
                 {
-                    Console.WriteLine("Donloading Status Metadata...");
+                    Console.Write("Donloading Status Metadata...");
+                    count++;
                     escapedJson = webClient.DownloadString("https://api.xivdb.com/status?columns=id,icon,name,name_en,name_fr,name_de,name_ja");
-                    Console.WriteLine("Success.");
+                    Console.WriteLine($" Success.");
                 }
                 catch (WebException wex)
                 {
-                    Console.WriteLine($"Error. {wex.Message} ({wex.Status})");
+                    Console.WriteLine($" Error. {wex.Message} ({wex.Status})");
                     return;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error. {ex.Message})");
+                    Console.WriteLine($" Error. {ex.Message})");
                     return;
                 }
 
             }
 
+            downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
 
-            List<Model.Status> status = JsonConvert.DeserializeObject<List<Model.Status>>(escapedJson);
-            Console.WriteLine("Generating JSON files...");
+            List<Model.Status> statusList = JsonConvert.DeserializeObject<List<Model.Status>>(escapedJson);
+            Console.WriteLine("Generating JSON files and downloading icons...");
             try
             {
-                File.WriteAllText(jsonPath + @"\status.json", Newtonsoft.Json.JsonConvert.SerializeObject(status));
+                Dictionary<int, Model.Status> status = new Dictionary<int, Model.Status>();
+                Dictionary<int, Model.StatusSummary> status_en = new Dictionary<int, Model.StatusSummary>();
+                Dictionary<int, Model.StatusSummary> status_fr = new Dictionary<int, Model.StatusSummary>();
+                Dictionary<int, Model.StatusSummary> status_de = new Dictionary<int, Model.StatusSummary>();
+                Dictionary<int, Model.StatusSummary> status_ja = new Dictionary<int, Model.StatusSummary>();
 
-                List<Model.Status_En> status_en = new List<Model.Status_En>();
-                List<Model.Status_Fr> status_fr = new List<Model.Status_Fr>();
-                List<Model.Status_De> status_de = new List<Model.Status_De>();
-                List<Model.Status_Ja> status_ja = new List<Model.Status_Ja>();
-
-                foreach (var s in status)
+                using (WebClient webClient = new WebClient())
                 {
-                    status_en.Add(new Model.Status_En { id = s.id, icon = s.icon, name = s.name, name_en = s.name_en });
-                    status_fr.Add(new Model.Status_Fr { id = s.id, icon = s.icon, name = s.name, name_fr = s.name_fr });
-                    status_de.Add(new Model.Status_De { id = s.id, icon = s.icon, name = s.name, name_de = s.name_de });
-                    status_ja.Add(new Model.Status_Ja { id = s.id, icon = s.icon, name = s.name, name_ja = s.name_ja });
+
+
+                    foreach (var s in statusList)
+                    {
+                        downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
+                        while (downloadRate > WEB_ACCESS_RATE_LIMIT)
+                        {
+                            Thread.Sleep(500);
+                            downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
+                        }
+
+                        count++;
+                        var json = webClient.DownloadString("https://api.xivdb.com/status/" + s.Id);
+                        Model.StatusDetail statusDetail = JsonConvert.DeserializeObject<Model.StatusDetail>(json);
+
+                        string iconFileName = String.Empty;
+                        if (statusDetail.Icon != null)
+                        {
+                            string fileName = s.Icon + @".png";
+                            string filePath = imgPath + @"\" + fileName;
+                            Uri imgUri = new Uri(statusDetail.Icon);
+
+                            downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
+                            while (downloadRate > WEB_ACCESS_RATE_LIMIT)
+                            {
+                                Thread.Sleep(500);
+                                downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
+                            }
+
+                            try
+                            {
+                                Console.WriteLine("Downloading: {0} (CurrentAccessRate= {1:F2} /sec)", fileName, downloadRate);
+                                count++;
+                                webClient.DownloadFile(imgUri, filePath);
+                                iconFileName = fileName;
+                            }
+                            catch (WebException wex)
+                            {
+                                iconFileName = null;
+                                Console.WriteLine($" => {wex.Message}");
+                            }
+                            catch (Exception ex)
+                            {
+                                iconFileName = null;
+                                Console.WriteLine($" => {ex.Message}");
+                            }
+                        }
+
+                        status.Add(s.Id, new Model.Status
+                        {
+                            Id = s.Id,
+                            Icon = s.Icon,
+                            IconFileName = iconFileName,
+                            Name = s.Name,
+                            Name_en = s.Name_en,
+                            Name_fr = s.Name_fr,
+                            Name_de = s.Name_de,
+                            Name_ja = s.Name_ja
+                        });
+                        status_en.Add(s.Id, new Model.StatusSummary { IconFileName = iconFileName, Name = s.Name_en });
+                        status_fr.Add(s.Id, new Model.StatusSummary { IconFileName = iconFileName, Name = s.Name_fr });
+                        status_de.Add(s.Id, new Model.StatusSummary { IconFileName = iconFileName, Name = s.Name_de });
+                        status_ja.Add(s.Id, new Model.StatusSummary { IconFileName = iconFileName, Name = s.Name_ja });
+                    }
                 }
 
+                Console.WriteLine("Writing JSON Files...");
+
+                File.WriteAllText(jsonPath + @"\status.json", Newtonsoft.Json.JsonConvert.SerializeObject(status));
                 File.WriteAllText(jsonPath + @"\status_en.json", Newtonsoft.Json.JsonConvert.SerializeObject(status_en));
                 File.WriteAllText(jsonPath + @"\status_fr.json", Newtonsoft.Json.JsonConvert.SerializeObject(status_fr));
                 File.WriteAllText(jsonPath + @"\status_de.json", Newtonsoft.Json.JsonConvert.SerializeObject(status_de));
                 File.WriteAllText(jsonPath + @"\status_ja.json", Newtonsoft.Json.JsonConvert.SerializeObject(status_ja));
+
+                File.WriteAllText(jsonPath + @"\status.js", "var statusArray = ");
+                File.WriteAllText(jsonPath + @"\status_en.js", "var statusArray = ");
+                File.WriteAllText(jsonPath + @"\status_fr.js", "var statusArray = ");
+                File.WriteAllText(jsonPath + @"\status_de.js", "var statusArray = ");
+                File.WriteAllText(jsonPath + @"\status_ja.js", "var statusArray = ");
+
+                File.AppendAllText(jsonPath + @"\status.js", Newtonsoft.Json.JsonConvert.SerializeObject(status));
+                File.AppendAllText(jsonPath + @"\status_en.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_en));
+                File.AppendAllText(jsonPath + @"\status_fr.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_fr));
+                File.AppendAllText(jsonPath + @"\status_de.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_de));
+                File.AppendAllText(jsonPath + @"\status_ja.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_ja));
+
+                File.AppendAllText(jsonPath + @"\status.js", ";");
+                File.AppendAllText(jsonPath + @"\status_en.js", ";");
+                File.AppendAllText(jsonPath + @"\status_fr.js", ";");
+                File.AppendAllText(jsonPath + @"\status_de.js", ";");
+                File.AppendAllText(jsonPath + @"\status_ja.js", ";");
+
 
                 Console.WriteLine("Success.");
             }
@@ -109,61 +211,8 @@ namespace ResourceDownloader
                 return;
             }
 
-
-            Stopwatch stopwatch = new Stopwatch();
-            float downloadRate = 0.0F;
-            int count = 0;
-
-            Console.WriteLine("Download Icons...");
-            Console.WriteLine("Access Limit: {0:F2} per second.", WEB_ACCESS_RATE_LIMIT);
-
-            using (WebClient webClient = new WebClient())
-            {
-                stopwatch.Start();
-
-                foreach (var s in status)
-                {
-                    var json = webClient.DownloadString("https://api.xivdb.com/status/" + s.id);
-                    count++;
-                    Model.StatusDetail statusDetail = JsonConvert.DeserializeObject<Model.StatusDetail>(json);
-
-                    if (statusDetail.icon == null) continue;
-
-
-                    string fileName = s.icon + @".png";
-                    string filePath = imgPath + @"\" + fileName;
-                    Uri imgUri = new Uri(statusDetail.icon);
-
-                    try
-                    {
-                        Console.WriteLine("Downloading: {0}   DownloadRate={1:F2}", fileName, downloadRate);
-                        webClient.DownloadFile(imgUri, filePath);
-                    }
-                    catch (WebException wex)
-                    {
-                        Console.WriteLine($" => {wex.Message}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($" => {ex.Message}");
-                    }
-                    count++;
-
-                    downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
-                    while (downloadRate > WEB_ACCESS_RATE_LIMIT)
-                    {
-                        Thread.Sleep(500);
-                        downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
-                    }
-                }
-
-                stopwatch.Stop();
-
-
-            }
-            Console.WriteLine("Complete. Time= {0} seconds.", stopwatch.Elapsed.Seconds);
-
-
+            stopwatch.Stop();
+            Console.WriteLine("Complete. Time= {0} seconds.", (float)(stopwatch.ElapsedMilliseconds/1000F));
 
         }
     }
