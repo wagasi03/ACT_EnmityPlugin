@@ -13,18 +13,32 @@ namespace ResourceDownloader
 {
     class Program
     {
-        const float WEB_ACCESS_RATE_LIMIT = 4.0F;
+        const float WEB_ACCESS_RATE_LIMIT = 5.0F;
 
         static void Main(string[] args)
         {
+            string opt = String.Empty;
+            if(args.Length > 0)
+            {
+                opt = args[0];
+            }
+
             DownloadStatusData();
-            Console.WriteLine("To exit application, press \"Enter\".");
-            Console.ReadLine();
+
+            if (opt == "/y" || opt == "/Y")
+            {
+                Console.WriteLine("");
+            }
+            else
+            {
+                Console.WriteLine("To exit application, press \"Enter\".");
+                Console.ReadLine();
+            }
         }
 
         static void DownloadStatusData()
         {
-            string jsonPath = @"resources\json\status";
+            string jsonPath = @"resources\EnmityPlugin\json\status";
             if (!Directory.Exists(jsonPath))
             {
                 try
@@ -39,7 +53,7 @@ namespace ResourceDownloader
             }
 
 
-            string imgPath = @"resources\images\status";
+            string imgPath = @"resources\EnmityPlugin\images\status";
             if (!Directory.Exists(imgPath))
             {
                 try
@@ -127,7 +141,7 @@ namespace ResourceDownloader
 
                             try
                             {
-                                Console.WriteLine("Downloading: {0}   DownloadRate={1:F2}", fileName, downloadRate);
+                                Console.WriteLine("Downloading: {0} (CurrentAccessRate= {1:F2} /sec)", fileName, downloadRate);
                                 count++;
                                 webClient.DownloadFile(imgUri, filePath);
                                 iconFileName = fileName;
