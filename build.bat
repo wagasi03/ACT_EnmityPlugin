@@ -1,34 +1,34 @@
 @echo off
 
 if not exist "%~dp0\Thirdparty\ACT\Advanced Combat Tracker.exe" (
-	echo ƒGƒ‰[: "Thirdparty" ƒfƒBƒŒƒNƒgƒŠ‚É "Advanced Combat Tracker.exe" ‚ğƒRƒs[‚µ‚Ä‚­‚¾‚³‚¢B
+	echo ã‚¨ãƒ©ãƒ¼: "Thirdparty" ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã« "Advanced Combat Tracker.exe" ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦ãã ã•ã„ã€‚
 	goto END
 )
 
 if not exist "%~dp0\Thirdparty\OverlayPlugin\OverlayPlugin.Core.dll" (
-	echo ƒGƒ‰[: "Thirdparty\OverlayPlugin" ƒfƒBƒŒƒNƒgƒŠ‚É "OverlayPlugin.Core.dll" ‚ğƒRƒs[‚µ‚Ä‚­‚¾‚³‚¢B
+	echo ã‚¨ãƒ©ãƒ¼: "Thirdparty\OverlayPlugin" ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã« "OverlayPlugin.Core.dll" ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦ãã ã•ã„ã€‚
 	goto END
 )
 
 if not exist "%~dp0\Thirdparty\OverlayPlugin\OverlayPlugin.Common.dll" (
-	echo ƒGƒ‰[: "Thirdparty\OverlayPlugin" ƒfƒBƒŒƒNƒgƒŠ‚É "OverlayPlugin.Common.dll" ‚ğƒRƒs[‚µ‚Ä‚­‚¾‚³‚¢B
+	echo ã‚¨ãƒ©ãƒ¼: "Thirdparty\OverlayPlugin" ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã« "OverlayPlugin.Common.dll" ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦ãã ã•ã„ã€‚
 	goto END
 )
 
 if not exist "%~dp0\Thirdparty\OverlayPlugin\HtmlRenderer.dll" (
-	echo ƒGƒ‰[: "Thirdparty\OverlayPlugin" ƒfƒBƒŒƒNƒgƒŠ‚É "HtmlRenderer.dll" ‚ğƒRƒs[‚µ‚Ä‚­‚¾‚³‚¢B
+	echo ã‚¨ãƒ©ãƒ¼: "Thirdparty\OverlayPlugin" ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã« "HtmlRenderer.dll" ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦ãã ã•ã„ã€‚
 	goto END
 )
 
 set DOTNET_PATH=%windir%\Microsoft.NET\Framework\v4.0.30319
 if not exist %DOTNET_PATH% (
-	echo ƒGƒ‰[: .NET Framework ‚ÌƒfƒBƒŒƒNƒgƒŠ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñBƒrƒ‹ƒh‚ğÀs‚·‚é‚½‚ß‚É‚Í .NET Framework 4.6‚ªƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚Ä‚¢‚é•K—v‚ª‚ ‚è‚Ü‚·B
+	echo ã‚¨ãƒ©ãƒ¼: .NET Framework ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚ãƒ“ãƒ«ãƒ‰ã‚’å®Ÿè¡Œã™ã‚‹ãŸã‚ã«ã¯ .NET Framework 4.6ãŒã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã¦ã„ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
 	goto END
 )
 
-set MSBUILD_PATH="%ProgramFiles(x86)%\MSBuild\14.0"
+set MSBUILD_PATH="%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Professional\MSBuild\15.0"
 if not exist %MSBUILD_PATH% (
-	echo ƒGƒ‰[: Microsoft Build Tool 2015 ‚ÌƒfƒBƒŒƒNƒgƒŠ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñBƒrƒ‹ƒh‚ğÀs‚·‚é‚½‚ß‚É‚Í Microsoft Build Tool 2015‚ªƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚Ä‚¢‚é•K—v‚ª‚ ‚è‚Ü‚·B
+	echo ã‚¨ãƒ©ãƒ¼: Microsoft Build Tool ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚ãƒ“ãƒ«ãƒ‰ã‚’å®Ÿè¡Œã™ã‚‹ãŸã‚ã«ã¯ Microsoft Build Tool ãŒã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã¦ã„ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
 	goto END
 )
 
