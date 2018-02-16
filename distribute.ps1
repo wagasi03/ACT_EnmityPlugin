@@ -22,7 +22,12 @@ xcopy /Y /R /S /EXCLUDE:full.exclude "$buildFolder\*" "$fullFolder"
 cd Distribute
 $folder = "EnmityOverlay-" + $version
 
+# Download Icons
+cd $folder
+& ".\ResourceDownloader.exe" "/y"
+
 # アーカイブ
+cd ..\
 & "C:\Program Files\7-Zip\7z.exe" "a" "$folder.zip" "$folder"
 
 pause
