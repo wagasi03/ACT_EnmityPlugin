@@ -164,3 +164,24 @@ td { text-align: right; }
   position: relative;
   margin-left: 5px;
 }
+
+.status-icon {
+  display: inline-block;
+  width: 24px;
+  position: relative;
+}
+
+.status-icon img {
+  width: 24px;
+  height: 32px;
+}
+
+.status-icon span {
+  text-align: right;
+  position: absolute;
+  bottom: -4px;
+  right: 0px;
+  
+  font-size: 12px;
+
+}

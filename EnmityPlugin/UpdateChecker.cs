@@ -36,6 +36,7 @@ namespace Tamagawa.EnmityPlugin
         {
             var release = string.Empty;
 
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             System.Net.Configuration.HttpWebRequestElement httpConfig = new System.Net.Configuration.HttpWebRequestElement();
             httpConfig.UseUnsafeHeaderParsing = true;
 

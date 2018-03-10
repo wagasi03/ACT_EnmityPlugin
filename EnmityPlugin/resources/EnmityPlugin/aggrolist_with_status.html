@@ -19,11 +19,11 @@
         <!-- Table Header -->
         <thead class="gold">
           <tr>
-            <th class="text-center" >Hate</th>
-            <th class="test-center" >Target</th>
+            <th class="text-center">Hate</th>
+            <th class="test-center">Target</th>
             <th class="text-left">Name</th>
             <th class="text-right" style="padding-right: 4px">HPP</th>
-            <th class="text-right">Status</th>
+            <th class="text-center">Status</th>
           </tr>
         </thead>
         <!-- Table Body -->
@@ -33,7 +33,10 @@
             <tr class="{{combatant.isCurrentTarget ? '' : ''}}">
               <!-- Hate -->
               <td class="hate text-right">
-                <div class="hate {{combatant.hatecolor}}"><span style="position:absolute; left:12px;">{{combatant.isCurrentTarget ? "▶" : ""}}</span><span>{{combatant.HateRate}}%</span></div>
+                <div class="hate {{combatant.hatecolor}}">
+                  <span style="position:absolute; left:12px;">{{combatant.isCurrentTarget ? "▶" : ""}}</span>
+                  <span>{{combatant.HateRate}}%</span>
+                </div>
               </td>
               <!-- Target -->
               <td class="target text-center">
@@ -44,20 +47,25 @@
                 <div class="box">
                   <div class="content" style="width: 100%">
                     <span style="position:absolute; right:2px;">{{Math.round(combatant.HPPercent)}}%</span>
-                    <table class="blue" style="width:100%;">
+                    <table class="blue" style="width: 100%;">
                       <tr>
-                        <td style="text-align: left;">
-                          <span class="content" style="text-overflow: ellipsis;">{{combatant.Name}}</span>
+                        <td style="text-align: left; min-width: 40px; max-width: 60px;">
+                          <span class="content" style="white-space: nowrap; text-overflow: clip ;">{{combatant.Name}}</span>
                         </td>
-                        <td style="min-width: 36px"></td>
+                        <td style="min-width: 24px"></td>
                       </tr>
                     </table>
                   </div>
                   <div class="gauge {{combatant.hpcolor}}" style="width: {{combatant.HPPercent}}%" />
                 </div>
               </td>
-              <td>
-              <img v-repeat="status: combatant.Statuses" src="./images/status/{{status.iconFileName}}" style="width: 24px" title="{{status.name}}"></img>
+              <td style="width: 150px; min-width: 150px; max-width: 150px; text-align: left; padding-left: 5px;">
+                <template v-repeat="status: combatant.Statuses">
+                  <span class="status-icon">
+                    <img src="./images/status/{{status.iconFileName}}" title="{{status.name}}"></img>
+                    <span>{{Math.ceil(status.Duration)}}</span>
+                  </span>
+                </template>
               </td>
             </tr>
           </template>

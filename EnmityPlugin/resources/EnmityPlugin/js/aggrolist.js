@@ -86,15 +86,15 @@ var aggrolist = new Vue({
           }
           
           if(typeof(statusArray) != "undefined") {
+            var newStatuses = [];
             for (var j=0; j<c.Statuses.length; j++) {
               if(statusArray[c.Statuses[j].StatusID] != undefined) {
                 c.Statuses[j].iconFileName = statusArray[c.Statuses[j].StatusID].iconFileName;
                 c.Statuses[j].name = statusArray[c.Statuses[j].StatusID].name;
-              } else {
-                c.Statuses[j].iconFileName = "0.png"
-                c.Statuses[j].name = c.Statuses[j].StatusID;
-              }
+                newStatuses.push(c.Statuses[j]);
+              } 
             }
+            c.Statuses = newStatuses;
           }
           
           this.combatants.push(c);
