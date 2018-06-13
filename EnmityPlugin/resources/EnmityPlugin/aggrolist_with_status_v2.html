@@ -20,52 +20,49 @@
         <thead class="gold">
           <tr>
             <th class="text-center">Hate</th>
-            <th class="test-center">Target</th>
             <th class="text-left">Name</th>
             <th class="text-right" style="padding-right: 4px">HPP</th>
-            <th class="text-center">Status</th>
           </tr>
         </thead>
         <!-- Table Body -->
         <tbody class="blue">
           <!-- Vue Repeat Template -->
           <template v-repeat="combatant: combatants">
-            <tr class="{{combatant.isCurrentTarget ? '' : ''}}">
+            <tr class="{{combatant.isCurrentTarget ? '' : ''}}" style="vertical-align: top; height: 40px;">
               <!-- Hate -->
-              <td class="hate text-right">
-                <div class="hate {{combatant.hatecolor}}">
+              <td class="hate2">
+                <div class="hate text-right {{combatant.hatecolor}}" style="margin-top: 0px; padding: 0px 6px 0px 2px">
                   <span style="position:absolute; left:12px;">{{combatant.isCurrentTarget ? "▶" : ""}}</span>
                   <span>{{combatant.HateRate}}%</span>
                 </div>
-              </td>
-              <!-- Target -->
-              <td class="target text-center">
-                <div class="target {{combatant.Target | jobrole}}">{{combatant.Target.isMe ? "YOU" : combatant.Target.isPet ? "PET" : combatant.Target.JobName}}</div>
+                <div class="target text-center {{combatant.Target | jobrole}}" style="padding: 1px 4px;">
+                  {{combatant.Target.isMe ? "YOU" : combatant.Target.isPet ? "PET" : combatant.Target.JobName}}
+                </div>
               </td>
               <!-- Name & HPP -->
               <td class="text-left" colspan="2">
                 <div class="box">
-                  <div class="content" style="width: 100%">
-                    <span style="position:absolute; right:2px;">{{Math.round(combatant.HPPercent)}}%</span>
-                    <table class="blue" style="width: 100%;">
-                      <tr>
-                        <td style="text-align: left; min-width: 40px; max-width: 60px;">
-                          <span class="content" style="white-space: nowrap; text-overflow: clip ;">{{combatant.Name}}</span>
+                  <div class="content" style="width: 100%; height:100%;">
+                    <table class="blue" style="width: 100%; border-spacing: 0;">
+                      <tr style="vertical-align: top; border:none;">
+                        <td style="text-align: left; vertical-align: top; min-width: 40px; max-width: 60px;">
+                          <span class="content" style="white-space: nowrap; text-overflow: clip;">{{combatant.Name}}</span>
                         </td>
-                        <td style="min-width: 24px"></td>
+                        <td style="min-width: 18px"></td>
                       </tr>
                     </table>
+                    <span style="position:absolute; top: 1px; right:2px;">{{Math.round(combatant.HPPercent)}}%</span>
                   </div>
-                  <div class="gauge {{combatant.hpcolor}}" style="width: {{combatant.HPPercent}}%" />
+                  <div class="status2">
+                    <template v-repeat="status: combatant.Statuses">
+                      <span class="status-icon">
+                        <img class="small-1" src="./images/status/{{status.iconFileName}}" title="{{status.name}}"></img>
+                        <span class="isOwner-{{status.IsOwner}}">{{Math.ceil(status.Duration)}}</span>
+                      </span>
+                    </template>
+                  </div>
+                  <div class="gauge2 {{combatant.hpcolor}}" style="width: {{combatant.HPPercent}}%" />
                 </div>
-              </td>
-              <td style="width: 150px; min-width: 150px; max-width: 150px; text-align: left; padding-left: 5px;">
-                <template v-repeat="status: combatant.Statuses">
-                  <span class="status-icon">
-                    <img src="./images/status/{{status.iconFileName}}" title="{{status.name}}"></img>
-                    <span class="isOwner-{{status.IsOwner}}">{{Math.ceil(status.Duration)}}</span>
-                  </span>
-                </template>
               </td>
             </tr>
           </template>
@@ -85,7 +82,9 @@
   <!-- Demo Use -->
   <!--
   <script src="js/demodata.js"></script>
-  <script>Demo(aggrolist);</script>
+  <script>
+    Demo(aggrolist);
+  </script>
   -->
 </body>
 

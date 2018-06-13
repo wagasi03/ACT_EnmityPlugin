@@ -110,6 +110,12 @@ td { text-align: right; }
   width: 55px;
 }
 
+#combatants td.hate2 {
+  white-space: nowrap;
+  min-width: 58px;
+  width: 58px;
+}
+
 #combatants td.target {
   min-width: 50px;
   width: 50px;
@@ -160,6 +166,21 @@ td { text-align: right; }
   z-index: -1;
 }
 
+#combatants td div.gauge2 {
+  position: absolute;
+  display: block;
+  top: 10px;
+  height: 5px;
+  z-index: -1;
+}
+
+#combatants td div.status2 {
+  position: absolute;
+  display: block;
+  top: 12px;
+  z-index: -1;
+}
+
 #combatants td div.box {
   position: relative;
   margin-left: 5px;
@@ -176,12 +197,25 @@ td { text-align: right; }
   height: 32px;
 }
 
+.status-icon img.small-1 {
+  width: 21px;
+  height: 28px;
+}
+
+.status-icon img.small-2 {
+  width: 18px;
+  height: 24px;
+}
+
 .status-icon span {
   text-align: right;
   position: absolute;
   bottom: -4px;
   right: 0px;
-  
   font-size: 12px;
+}
 
+.status-icon span.isOwner-true {
+  color: rgb(70, 255, 70);
+  text-shadow: -1px 0 3px #001b00, 0 1px 3px #001b00, 1px 0 3px #001b00, 0 -1px 3px #001b00;
 }
