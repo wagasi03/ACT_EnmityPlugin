@@ -297,7 +297,7 @@ namespace Tamagawa.EnmityPlugin
             Combatant target = null;
             IntPtr address = IntPtr.Zero;
 
-            int offset = 0x48;
+            int offset = 0x20;
             byte[] source = GetByteArray(IntPtr.Add(targetAddress, offset), 128);
             unsafe
             {
