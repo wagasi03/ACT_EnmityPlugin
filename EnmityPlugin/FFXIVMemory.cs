@@ -273,7 +273,7 @@ namespace Tamagawa.EnmityPlugin
             Combatant target = null;
             IntPtr address = IntPtr.Zero;
 
-            int offset = 0x60;
+            int offset = 0x58;
             byte[] source = GetByteArray(IntPtr.Add(targetAddress, offset), 128);
             unsafe
             {
@@ -723,7 +723,7 @@ namespace Tamagawa.EnmityPlugin
 
             List<IntPtr> list = new List<IntPtr>();
 
-            // while loop for scan all memory 
+            // while loop for scan all memory
             while (intPtr_Scannning.ToInt64() < intPtr_EndOfModuleMemory.ToInt64())
             {
                 IntPtr nSize = new IntPtr(splitSizeOfMemory);
