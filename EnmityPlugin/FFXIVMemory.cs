@@ -423,10 +423,10 @@ namespace Tamagawa.EnmityPlugin
                     // Cast
                     combatant.Casting = new Cast
                     {
-                        ID = *(short*)&p[6900],
-                        TargetID = *(uint*)&p[6912],
-                        Progress = *(Single*)&p[6948],
-                        Time = *(Single*)&p[6952],
+                        ID = *(short*)&p[6900 + 16],
+                        TargetID = *(uint*)&p[6912 + 16],
+                        Progress = *(Single*)&p[6948 + 16],
+                        Time = *(Single*)&p[6952 + 16],
                     };
                 }
                 else

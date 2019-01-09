@@ -11,7 +11,7 @@ namespace ResourceDownloader
 {
     class Program
     {
-        const float WEB_ACCESS_RATE_LIMIT_BASIC = 5.0F;
+        const float WEB_ACCESS_RATE_LIMIT_BASIC = 0.5F;
         const float WEB_ACCESS_RATE_LIMIT_ICONS = 20.0F;
 
         static void Main(string[] args)
@@ -85,7 +85,8 @@ namespace ResourceDownloader
 
             Regex iconIdRegex = new Regex(@"(?<id>[0-9]*)\.png$");
 
-
+            Console.Write("Enter Your API Key for xivapi: ");
+            var apikey = Console.ReadLine();
             Console.WriteLine("");
             Console.WriteLine(" Donloading Status Metadata...");
             Console.WriteLine("-------------------------------------");
@@ -95,6 +96,7 @@ namespace ResourceDownloader
                 // レート制限
                 downloadRate = (count == 0) ? 0.0F : (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
                 Console.WriteLine("Downloading: Page {0}/{1} (Rate= {2:F2} /sec)", pageTarget, pageTotal, downloadRate);
+                Thread.Sleep(1000);
                 while (downloadRate > WEB_ACCESS_RATE_LIMIT_BASIC)
                 {
                     Thread.Sleep(500);
@@ -106,7 +108,7 @@ namespace ResourceDownloader
                     try
                     {
                         count++;
-                        escapedJson = webClient.DownloadString("https://xivapi.com/Status?columns=ID,Icon,Name_de,Name_en,Name_fr,Name_ja" + @"&page=" + pageTarget);
+                        escapedJson = webClient.DownloadString("https://xivapi.com/Status?columns=ID,Icon,Name_de,Name_en,Name_fr,Name_ja" + @"&page=" + pageTarget + @"&key=" + apikey);
                     }
                     catch (WebException wex)
                     {
