@@ -377,9 +377,9 @@ namespace Tamagawa.EnmityPlugin
                 combatant.PosY = *(Single*)&p[offset + 8];
                 combatant.Heading = *(Single*)&p[offset + 16];
 
-                combatant.TargetID = *(uint*)&p[5832];
+                combatant.TargetID = *(uint*)&p[5832 + 8];
 
-                offset = 5960;
+                offset = 5960 + 8;
                 if (combatant.type == ObjectType.PC || combatant.type == ObjectType.Monster)
                 {
                     combatant.CurrentHP = *(int*)&p[offset + 8];
@@ -393,7 +393,7 @@ namespace Tamagawa.EnmityPlugin
 
                     // Status aka Buff,Debuff
                     combatant.Statuses = new List<Status>();
-                    const int StatusEffectOffset = 6152;
+                    const int StatusEffectOffset = 6152 + 16;
                     const int statusSize = 12;
 
                     int statusCountLimit = 60;

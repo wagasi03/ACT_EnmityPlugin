@@ -1,27 +1,32 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
-using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
-using System.Diagnostics;
 
 namespace ResourceDownloader
 {
     class Program
     {
-        const float WEB_ACCESS_RATE_LIMIT = 5.0F;
+        const float WEB_ACCESS_RATE_LIMIT_BASIC = 5.0F;
+        const float WEB_ACCESS_RATE_LIMIT_ICONS = 20.0F;
 
         static void Main(string[] args)
         {
             string opt = String.Empty;
-            if(args.Length > 0)
+            if (args.Length > 0)
             {
                 opt = args[0];
             }
+
+            Console.WriteLine("===========================================");
+            Console.WriteLine("==           ResouceDownloader           ==");
+            Console.WriteLine("===========================================");
+            Console.WriteLine("");
+
 
             DownloadStatusData();
 
@@ -68,38 +73,80 @@ namespace ResourceDownloader
             }
 
             string escapedJson = String.Empty;
+            List<Model.Status> statusList = new List<Model.Status>();
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             float downloadRate = 0.0F;
             int count = 0;
 
-            using (WebClient webClient = new WebClient())
+            int pageTarget = 1;
+            int pageTotal = 1;
+
+            Regex iconIdRegex = new Regex(@"(?<id>[0-9]*)\.png$");
+
+
+            Console.WriteLine("");
+            Console.WriteLine(" Donloading Status Metadata...");
+            Console.WriteLine("-------------------------------------");
+
+            while (pageTarget <= pageTotal)
             {
-                try
+                // レート制限
+                downloadRate = (count == 0) ? 0.0F : (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
+                Console.WriteLine("Downloading: Page {0}/{1} (Rate= {2:F2} /sec)", pageTarget, pageTotal, downloadRate);
+                while (downloadRate > WEB_ACCESS_RATE_LIMIT_BASIC)
                 {
-                    Console.Write("Donloading Status Metadata...");
-                    count++;
-                    escapedJson = webClient.DownloadString("https://api.xivdb.com/status?columns=id,icon,name,name_en,name_fr,name_de,name_ja");
-                    Console.WriteLine($" Success.");
+                    Thread.Sleep(500);
+                    downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
                 }
-                catch (WebException wex)
+
+                using (WebClient webClient = new WebClient())
                 {
-                    Console.WriteLine($" Error. {wex.Message} ({wex.Status})");
-                    return;
+                    try
+                    {
+                        count++;
+                        escapedJson = webClient.DownloadString("https://xivapi.com/Status?columns=ID,Icon,Name_de,Name_en,Name_fr,Name_ja" + @"&page=" + pageTarget);
+                    }
+                    catch (WebException wex)
+                    {
+                        Console.WriteLine($" Error. {wex.Message} ({wex.Status})");
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($" Error. {ex.Message})");
+                        return;
+                    }
+
                 }
-                catch (Exception ex)
+
+                Model.XIVAPI.StatusResultSet statusResultSet = JsonConvert.DeserializeObject<Model.XIVAPI.StatusResultSet>(escapedJson);
+
+                foreach (var data in statusResultSet.Results)
                 {
-                    Console.WriteLine($" Error. {ex.Message})");
-                    return;
+                    Match iconIdMatch = iconIdRegex.Match(data.Icon);
+
+                    statusList.Add(new Model.Status()
+                    {
+                        Id = data.ID,
+                        IconURI = data.Icon,
+                        Icon = iconIdMatch.Success ? int.Parse(iconIdMatch.Groups["id"].Value) : 0,
+                        Name = data.Name_en,
+                        Name_de = data.Name_de,
+                        Name_en = data.Name_en,
+                        Name_fr = data.Name_fr,
+                        Name_ja = data.Name_ja,
+                    });
                 }
+
+
+                // 次ステップ
+                pageTarget++;
+                pageTotal = statusResultSet.Pagination.PageTotal;
 
             }
 
-            downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
-
-            List<Model.Status> statusList = JsonConvert.DeserializeObject<List<Model.Status>>(escapedJson);
-            Console.WriteLine("Generating JSON files and downloading icons...");
             try
             {
                 Dictionary<int, Model.Status> status = new Dictionary<int, Model.Status>();
@@ -110,38 +157,51 @@ namespace ResourceDownloader
 
                 using (WebClient webClient = new WebClient())
                 {
+                    Console.WriteLine("");
+                    Console.WriteLine("Downloading Icons ...");
+                    Console.WriteLine("-------------------------------------");
+
+                    // Donwload 0.png
+                    Uri zeroImgUri = new Uri("http://xivapi.com/i/000000/000000.png");
+                    string zeroImgFileName = "0.png";
+                    string zeroImgFilePath = imgPath + @"\" + zeroImgFileName;
+
+                    try
+                    {
+                        Console.WriteLine("Downloading: {0} (CurrentAccessRate= {1:F2} /sec)", zeroImgFileName, downloadRate);
+                        count++;
+                        webClient.DownloadFile(zeroImgUri, zeroImgFilePath);
+                    }
+                    catch (WebException wex)
+                    {
+                        Console.WriteLine($" => {wex.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($" => {ex.Message}");
+                    }
 
 
+                    // Download Status Icons
                     foreach (var s in statusList)
                     {
                         downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
-                        while (downloadRate > WEB_ACCESS_RATE_LIMIT)
+                        while (downloadRate > WEB_ACCESS_RATE_LIMIT_ICONS)
                         {
                             Thread.Sleep(500);
                             downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
                         }
 
-                        count++;
-                        var json = webClient.DownloadString("https://api.xivdb.com/status/" + s.Id);
-                        Model.StatusDetail statusDetail = JsonConvert.DeserializeObject<Model.StatusDetail>(json);
-
                         string iconFileName = String.Empty;
-                        if (statusDetail.Icon != null)
+                        if (s.Icon > 0 && !string.IsNullOrEmpty(s.IconURI))
                         {
                             string fileName = s.Icon + @".png";
                             string filePath = imgPath + @"\" + fileName;
-                            Uri imgUri = new Uri(statusDetail.Icon);
-
-                            downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
-                            while (downloadRate > WEB_ACCESS_RATE_LIMIT)
-                            {
-                                Thread.Sleep(500);
-                                downloadRate = (float)(count * 1000) / (stopwatch.ElapsedMilliseconds);
-                            }
+                            Uri imgUri = new Uri("https://xivapi.com" + s.IconURI);
 
                             try
                             {
-                                Console.WriteLine("Downloading: {0} (CurrentAccessRate= {1:F2} /sec)", fileName, downloadRate);
+                                Console.WriteLine("Downloading: {0} (Rate= {1:F2} /sec)", fileName, downloadRate);
                                 count++;
                                 webClient.DownloadFile(imgUri, filePath);
                                 iconFileName = fileName;
@@ -156,6 +216,10 @@ namespace ResourceDownloader
                                 iconFileName = null;
                                 Console.WriteLine($" => {ex.Message}");
                             }
+                        }
+                        else
+                        {
+                            iconFileName = "0.png";
                         }
 
                         status.Add(s.Id, new Model.Status
@@ -176,34 +240,57 @@ namespace ResourceDownloader
                     }
                 }
 
+                Console.WriteLine("");
                 Console.WriteLine("Writing JSON Files...");
+                Console.WriteLine("-------------------------------------");
 
+                Console.WriteLine("Writing: " + @"status.json");
                 File.WriteAllText(jsonPath + @"\status.json", Newtonsoft.Json.JsonConvert.SerializeObject(status));
+
+                Console.WriteLine("Writing: " + @"status_en.json");
                 File.WriteAllText(jsonPath + @"\status_en.json", Newtonsoft.Json.JsonConvert.SerializeObject(status_en));
+
+                Console.WriteLine("Writing: " + @"status_fr.json");
                 File.WriteAllText(jsonPath + @"\status_fr.json", Newtonsoft.Json.JsonConvert.SerializeObject(status_fr));
+
+                Console.WriteLine("Writing: " + @"status_de.json");
                 File.WriteAllText(jsonPath + @"\status_de.json", Newtonsoft.Json.JsonConvert.SerializeObject(status_de));
+
+                Console.WriteLine("Writing: " + @"status_ja.json");
                 File.WriteAllText(jsonPath + @"\status_ja.json", Newtonsoft.Json.JsonConvert.SerializeObject(status_ja));
 
+
+                Console.WriteLine("");
+                Console.WriteLine("Writing JS Files...");
+                Console.WriteLine("-------------------------------------");
+
+
+                Console.WriteLine("Writing: " + @"status.js");
                 File.WriteAllText(jsonPath + @"\status.js", "var statusArray = ");
-                File.WriteAllText(jsonPath + @"\status_en.js", "var statusArray = ");
-                File.WriteAllText(jsonPath + @"\status_fr.js", "var statusArray = ");
-                File.WriteAllText(jsonPath + @"\status_de.js", "var statusArray = ");
-                File.WriteAllText(jsonPath + @"\status_ja.js", "var statusArray = ");
-
                 File.AppendAllText(jsonPath + @"\status.js", Newtonsoft.Json.JsonConvert.SerializeObject(status));
-                File.AppendAllText(jsonPath + @"\status_en.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_en));
-                File.AppendAllText(jsonPath + @"\status_fr.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_fr));
-                File.AppendAllText(jsonPath + @"\status_de.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_de));
-                File.AppendAllText(jsonPath + @"\status_ja.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_ja));
-
                 File.AppendAllText(jsonPath + @"\status.js", ";");
+
+                Console.WriteLine("Writing: " + @"status_en.js");
+                File.WriteAllText(jsonPath + @"\status_en.js", "var statusArray = ");
+                File.AppendAllText(jsonPath + @"\status_en.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_en));
                 File.AppendAllText(jsonPath + @"\status_en.js", ";");
+
+                Console.WriteLine("Writing: " + @"status_fr.js");
+                File.WriteAllText(jsonPath + @"\status_fr.js", "var statusArray = ");
+                File.AppendAllText(jsonPath + @"\status_fr.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_fr));
                 File.AppendAllText(jsonPath + @"\status_fr.js", ";");
+
+                Console.WriteLine("Writing: " + @"status_de.js");
+                File.WriteAllText(jsonPath + @"\status_de.js", "var statusArray = ");
+                File.AppendAllText(jsonPath + @"\status_de.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_de));
                 File.AppendAllText(jsonPath + @"\status_de.js", ";");
+
+                Console.WriteLine("Writing: " + @"status_ja.js");
+                File.WriteAllText(jsonPath + @"\status_ja.js", "var statusArray = ");
+                File.AppendAllText(jsonPath + @"\status_ja.js", Newtonsoft.Json.JsonConvert.SerializeObject(status_ja));
                 File.AppendAllText(jsonPath + @"\status_ja.js", ";");
 
 
-                Console.WriteLine("Success.");
             }
             catch (Exception ex)
             {
@@ -212,7 +299,11 @@ namespace ResourceDownloader
             }
 
             stopwatch.Stop();
-            Console.WriteLine("Complete. Time= {0} seconds.", (float)(stopwatch.ElapsedMilliseconds/1000F));
+            Console.WriteLine("");
+            Console.WriteLine("-------------------------------------");
+            Console.WriteLine("Complete. Time= {0} seconds.", (float)(stopwatch.ElapsedMilliseconds / 1000F));
+            Console.WriteLine("-------------------------------------");
+            Console.WriteLine("");
 
         }
     }

@@ -120,7 +120,8 @@ namespace Tamagawa.EnmityPlugin
         DRK, // 32
         AST, // 33
         SAM, // 34
-        RDM  // 35
+        RDM, // 35
+        BLU  // 36
     }
 
     //// 敵視されてるキャラエントリ
