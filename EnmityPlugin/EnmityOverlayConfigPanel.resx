@@ -868,13 +868,13 @@
     <value>NoControl</value>
   </data>
   <data name="label_Help.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 281</value>
+    <value>6, 287</value>
   </data>
   <data name="label_Help.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 10, 3, 0</value>
   </data>
   <data name="label_Help.Size" type="System.Drawing.Size, System.Drawing">
-    <value>590, 71</value>
+    <value>590, 65</value>
   </data>
   <data name="label_Help.TabIndex" type="System.Int32, mscorlib">
     <value>99</value>
@@ -1170,7 +1170,7 @@
     <value>6, 249</value>
   </data>
   <data name="label_AggroListSort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>149, 22</value>
+    <value>149, 28</value>
   </data>
   <data name="label_AggroListSort.TabIndex" type="System.Int32, mscorlib">
     <value>102</value>
@@ -1215,7 +1215,7 @@
     <value>3, 2, 1, 0</value>
   </data>
   <data name="combo_AggroListSortKey.Size" type="System.Drawing.Size, System.Drawing">
-    <value>122, 20</value>
+    <value>145, 20</value>
   </data>
   <data name="combo_AggroListSortKey.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1236,10 +1236,10 @@
     <value>True</value>
   </data>
   <data name="check_AggroListSortDescend.Location" type="System.Drawing.Point, System.Drawing">
-    <value>129, 3</value>
+    <value>152, 3</value>
   </data>
   <data name="check_AggroListSortDescend.Size" type="System.Drawing.Size, System.Drawing">
-    <value>77, 10</value>
+    <value>77, 16</value>
   </data>
   <data name="check_AggroListSortDescend.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -1259,11 +1259,14 @@
   <data name="&gt;&gt;check_AggroListSortDescend.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
+  <data name="table_AggroListSort.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
   <data name="table_AggroListSort.Location" type="System.Drawing.Point, System.Drawing">
     <value>161, 252</value>
   </data>
   <data name="table_AggroListSort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>200, 16</value>
+    <value>435, 22</value>
   </data>
   <data name="table_AggroListSort.TabIndex" type="System.Int32, mscorlib">
     <value>103</value>
@@ -1314,7 +1317,7 @@
     <value>0</value>
   </data>
   <data name="tableLayoutPanel7.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="label_Process" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="table_Process" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_ShowOverlay" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="checkEnmityVisible" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_Clickthru" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="checkEnmityClickThru" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_LockOverlay" Row="3" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="checkLock" Row="3" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_URL" Row="4" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="table_URL" Row="4" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_ScanInterval" Row="5" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="nudEnmityScanInterval" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_Hotkey" Row="6" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="table_Hotkey" Row="6" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_Framerate" Row="7" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="nudEnmityMaxFrameRate" Row="7" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_Help" Row="10" RowSpan="1" Column="0" ColumnSpan="2" /&gt;&lt;Control Name="panel_Buttons" Row="11" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_MemorySetting" Row="8" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="table_MemorySetting" Row="8" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_AggroListSort" Row="9" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="table_AggroListSort" Row="9" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,155,Percent,100" /&gt;&lt;Rows Styles="Absolute,22,Absolute,22,Absolute,22,Absolute,22,Absolute,22,Absolute,22,Absolute,22,Absolute,22,Absolute,70,Absolute,22,Percent,100,Absolute,57" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="label_Process" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="table_Process" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_ShowOverlay" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="checkEnmityVisible" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_Clickthru" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="checkEnmityClickThru" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_LockOverlay" Row="3" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="checkLock" Row="3" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_URL" Row="4" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="table_URL" Row="4" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_ScanInterval" Row="5" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="nudEnmityScanInterval" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_Hotkey" Row="6" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="table_Hotkey" Row="6" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_Framerate" Row="7" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="nudEnmityMaxFrameRate" Row="7" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_Help" Row="10" RowSpan="1" Column="0" ColumnSpan="2" /&gt;&lt;Control Name="panel_Buttons" Row="11" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_MemorySetting" Row="8" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="table_MemorySetting" Row="8" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label_AggroListSort" Row="9" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="table_AggroListSort" Row="9" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,155,Percent,100" /&gt;&lt;Rows Styles="Absolute,22,Absolute,22,Absolute,22,Absolute,22,Absolute,22,Absolute,22,Absolute,22,Absolute,22,Absolute,70,Absolute,28,Percent,100,Absolute,57" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
