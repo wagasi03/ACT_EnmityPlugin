@@ -21,14 +21,60 @@ namespace Tamagawa.EnmityPlugin
         internal List<Combatant> Combatants { get; private set; }
         internal object CombatantsLock => new object();
 
+        // Charmap
         private const string charmapSignature = "488b420848c1e8033da701000077248bc0488d0d";
-        private const string targetSignature = "41bc000000e041bd01000000493bc47555488d0d";
-        private const string enmitySignature = "83f9ff7412448b048e8bd3488d0d";
         private const int charmapOffset = 0;
-        private const int targetOffset = 192;
-        private const int enmityOffset = -4648;
 
+        // Target
+        private const string targetSignature = "41bc000000e041bd01000000493bc47555488d0d";
+        private const int targetOffset = 144;
+        private const int currentTargetOffset = 40;
+        private const int anchorTargetOffset = 56;
+        private const int focusTargetOffset = 136;
+        private const int hoverTargetOffset = 80;
+        private const int previousTargetOffset = 160; // not used.
+
+        // Enmity
+        private const string enmitySignature = "83f9ff7412448b048e8bd3488d0d";
+        private const int enmityOffset = -4656;
+
+        private const int aggroOffsetFromEnmityAddress = 72*32+8;
+
+        private const int enmityStructure_ItemSize = 72;
+        private const int enmityStructure_ItemOffset_ID = 64;
+        private const int enmityStructure_ItemOffset_Enmity = 68;
+
+        // Combatant
         private const int combatantDataSize = 16192; //0x3F40
+        private const int combatantStructureOffset_Name = 48;
+        private const int combatantStructureOffset_ID = 116;
+        private const int combatantStructureOffset_OwnerID = 132;
+        private const int combatantStructureOffset_Type = 140;
+        private const int combatantStructureOffset_EffectiveDistance = 146;
+        private const int combatantStructureOffset_PosX = 160;
+        private const int combatantStructureOffset_PosZ = 164;
+        private const int combatantStructureOffset_PosY = 168;
+        private const int combatantStructureOffset_Heading = 5840;
+        private const int combatantStructureOffset_CurrentHP = 5976;
+        private const int combatantStructureOffset_MaxHP = 5980;
+        private const int combatantStructureOffset_CurrentMP = 5984;
+        private const int combatantStructureOffset_MaxMP = 5988;
+        private const int combatantStructureOffset_CurrentTP = 5992;
+        private const int combatantStructureOffset_Job = 6032;
+        private const int combatantStructureOffset_Level = 6034;
+
+        private const int combatantStructureOffset_StatusOffset = 6168;
+        private const int combatantStructureOffset_StatusItemSize = 12;
+        private const int combatantStructureOffset_StatusItem_ID = 0;
+        private const int combatantStructureOffset_StatusItem_Stacks = 2;
+        private const int combatantStructureOffset_StatusItem_Duration = 4;
+        private const int combatantStructureOffset_StatusItem_CasterID = 8;
+
+        private const int combatantStructureOffset_CastingID = 6916;
+        private const int combatantStructureOffset_CastingTargetID = 6928;
+        private const int combatantStructureOffset_CastingProgress = 6964;
+        private const int combatantStructureOffset_CastingTime = 6968;
+
 
         private EnmityOverlay _overlay;
         private Process _process;
@@ -162,7 +208,7 @@ namespace Tamagawa.EnmityPlugin
             if (list != null && list.Count == 1)
             {
                 enmityAddress = list[0] + enmityOffset;
-                aggroAddress = IntPtr.Add(enmityAddress, 2312); // Offset 0x900 + 8
+                aggroAddress = IntPtr.Add(enmityAddress, enmityStructure_ItemSize * 32 + 8);
             }
             else
             {
@@ -211,7 +257,7 @@ namespace Tamagawa.EnmityPlugin
             Combatant target = null;
             IntPtr address = IntPtr.Zero;
 
-            byte[] source = GetByteArray(targetAddress, 128);
+            byte[] source = GetByteArray(IntPtr.Add(targetAddress, currentTargetOffset), 128);
             unsafe
             {
                 fixed (byte* p = source) address = new IntPtr(*(Int64*)p);
@@ -249,8 +295,7 @@ namespace Tamagawa.EnmityPlugin
             Combatant target = null;
             IntPtr address = IntPtr.Zero;
 
-            int offset = 0x08;
-            byte[] source = GetByteArray(IntPtr.Add(targetAddress, offset), 128);
+            byte[] source = GetByteArray(IntPtr.Add(targetAddress, anchorTargetOffset), 128);
             unsafe
             {
                 fixed (byte* p = source) address = new IntPtr(*(Int64*)p);
@@ -273,8 +318,7 @@ namespace Tamagawa.EnmityPlugin
             Combatant target = null;
             IntPtr address = IntPtr.Zero;
 
-            int offset = 0x60;
-            byte[] source = GetByteArray(IntPtr.Add(targetAddress, offset), 128);
+            byte[] source = GetByteArray(IntPtr.Add(targetAddress, focusTargetOffset), 128);
             unsafe
             {
                 fixed (byte* p = source) address = new IntPtr(*(Int64*)p);
@@ -297,8 +341,7 @@ namespace Tamagawa.EnmityPlugin
             Combatant target = null;
             IntPtr address = IntPtr.Zero;
 
-            int offset = 0x48;
-            byte[] source = GetByteArray(IntPtr.Add(targetAddress, offset), 128);
+            byte[] source = GetByteArray(IntPtr.Add(targetAddress, hoverTargetOffset), 128);
             unsafe
             {
                 fixed (byte* p = source) address = new IntPtr(*(Int64*)p);
@@ -354,63 +397,56 @@ namespace Tamagawa.EnmityPlugin
         /// </summary>
         public unsafe Combatant GetCombatantFromByteArray(byte[] source)
         {
-            int offset = 0;
             Combatant combatant = new Combatant();
             fixed (byte* p = source)
             {
                 // For Debug
                 //combatant.BoA = BitConverter.ToString(source);
 
-                combatant.Name = GetStringFromBytes(source, 48);
-                combatant.ID = *(uint*)&p[116];
-                combatant.OwnerID = *(uint*)&p[132];
+                combatant.Name = GetStringFromBytes(source, combatantStructureOffset_Name);
+                combatant.ID = *(uint*)&p[combatantStructureOffset_ID];
+                combatant.OwnerID = *(uint*)&p[combatantStructureOffset_OwnerID];
                 if (combatant.OwnerID == 3758096384u)
                 {
                     combatant.OwnerID = 0u;
                 }
-                combatant.type = (ObjectType)p[140];
-                combatant.EffectiveDistance = p[146];
+                combatant.type = (ObjectType)p[combatantStructureOffset_Type];
+                combatant.EffectiveDistance = p[combatantStructureOffset_EffectiveDistance];
 
-                offset = 160;
-                combatant.PosX = *(Single*)&p[offset];
-                combatant.PosZ = *(Single*)&p[offset + 4];
-                combatant.PosY = *(Single*)&p[offset + 8];
-                combatant.Heading = *(Single*)&p[offset + 16];
+                combatant.PosX = *(Single*)&p[combatantStructureOffset_PosX];
+                combatant.PosZ = *(Single*)&p[combatantStructureOffset_PosZ];
+                combatant.PosY = *(Single*)&p[combatantStructureOffset_PosY];
+                combatant.Heading = *(Single*)&p[combatantStructureOffset_Heading];
 
-                combatant.TargetID = *(uint*)&p[5832 + 8];
+                combatant.TargetID = *(uint*)&p[combatantStructureOffset_Heading];
 
-                offset = 5960 + 8;
                 if (combatant.type == ObjectType.PC || combatant.type == ObjectType.Monster)
                 {
-                    combatant.CurrentHP = *(int*)&p[offset + 8];
-                    combatant.MaxHP = *(int*)&p[offset + 12];
-                    combatant.CurrentMP = *(int*)&p[offset + 16];
-                    combatant.MaxMP = *(int*)&p[offset + 20];
-                    combatant.CurrentTP = *(short*)&p[offset + 24];
+                    combatant.CurrentHP = *(int*)&p[combatantStructureOffset_CurrentHP];
+                    combatant.MaxHP = *(int*)&p[combatantStructureOffset_MaxHP];
+                    combatant.CurrentMP = *(int*)&p[combatantStructureOffset_CurrentMP];
+                    combatant.MaxMP = *(int*)&p[combatantStructureOffset_MaxMP];
+                    combatant.CurrentTP = *(short*)&p[combatantStructureOffset_CurrentTP];
                     combatant.MaxTP = 1000;
-                    combatant.Job = p[offset + 64];
-                    combatant.Level = p[offset + 66];
+                    combatant.Job = p[combatantStructureOffset_Job];
+                    combatant.Level = p[combatantStructureOffset_Level];
 
                     // Status aka Buff,Debuff
                     combatant.Statuses = new List<Status>();
-                    const int StatusEffectOffset = 6152 + 16;
-                    const int statusSize = 12;
+                    int statusCountLimit = (combatant.type == ObjectType.PC) ? 30 : 60;
 
-                    int statusCountLimit = 60;
-                    if (combatant.type == ObjectType.PC) statusCountLimit = 30;
-
-                    var statusesSource = new byte[statusCountLimit * statusSize];
-                    Buffer.BlockCopy(source, StatusEffectOffset, statusesSource, 0, statusCountLimit * statusSize);
+                    var statusesSource = new byte[statusCountLimit * combatantStructureOffset_StatusItemSize];
+                    Buffer.BlockCopy(source, combatantStructureOffset_StatusOffset, statusesSource, 0, statusCountLimit * combatantStructureOffset_StatusItemSize);
                     for (var i = 0; i < statusCountLimit; i++)
                     {
-                        var statusBytes = new byte[statusSize];
-                        Buffer.BlockCopy(statusesSource, i * statusSize, statusBytes, 0, statusSize);
+                        var statusBytes = new byte[combatantStructureOffset_StatusItemSize];
+                        Buffer.BlockCopy(statusesSource, i * combatantStructureOffset_StatusItemSize, statusBytes, 0, combatantStructureOffset_StatusItemSize);
                         var status = new Status
                         {
-                            StatusID = BitConverter.ToInt16(statusBytes, 0),
-                            Stacks = statusBytes[2],
-                            Duration = BitConverter.ToSingle(statusBytes, 4),
-                            CasterID = BitConverter.ToUInt32(statusBytes, 8),
+                            StatusID = BitConverter.ToInt16(statusBytes, combatantStructureOffset_StatusItem_ID),
+                            Stacks = statusBytes[combatantStructureOffset_StatusItem_Stacks],
+                            Duration = BitConverter.ToSingle(statusBytes, combatantStructureOffset_StatusItem_Duration),
+                            CasterID = BitConverter.ToUInt32(statusBytes, combatantStructureOffset_StatusItem_CasterID),
                             IsOwner = false,
                         };
 
@@ -423,10 +459,10 @@ namespace Tamagawa.EnmityPlugin
                     // Cast
                     combatant.Casting = new Cast
                     {
-                        ID = *(short*)&p[6900 + 16],
-                        TargetID = *(uint*)&p[6912 + 16],
-                        Progress = *(Single*)&p[6948 + 16],
-                        Time = *(Single*)&p[6952 + 16],
+                        ID = *(short*)&p[combatantStructureOffset_CastingID],
+                        TargetID = *(uint*)&p[combatantStructureOffset_CastingTargetID],
+                        Progress = *(Single*)&p[combatantStructureOffset_CastingProgress],
+                        Time = *(Single*)&p[combatantStructureOffset_CastingTime],
                     };
                 }
                 else
@@ -456,25 +492,25 @@ namespace Tamagawa.EnmityPlugin
             Combatant mychar = GetSelfCombatant();
 
             /// 一度に全部読む
-            byte[] buffer = GetByteArray(enmityAddress, 0x900 + 2);
-            fixed (byte* p = buffer) num = (short)p[2296];
+            byte[] buffer = GetByteArray(enmityAddress, enmityStructure_ItemSize * 32 + 2); // +2 is for 'num'
+            fixed (byte* p = buffer) num = (short)p[enmityStructure_ItemSize * 32];
 
             if (num <= 0)
             {
                 return result;
             }
-            if (num > 31) num = 31; // changed??? 32->31
+            if (num > 32) num = 32;
 
             for (short i = 0; i < num; i++)
             {
-                int p = i * 72;
+                int p = i * enmityStructure_ItemSize;
                 uint _id;
                 uint _enmity;
 
                 fixed (byte* bp = buffer)
                 {
-                    _id = *(uint*)&bp[p + 56];
-                    _enmity = *(uint*)&bp[p + 60];
+                    _id = *(uint*)&bp[p + enmityStructure_ItemOffset_ID];
+                    _enmity = *(uint*)&bp[p + enmityStructure_ItemOffset_Enmity];
                 }
                 var entry = new EnmityEntry()
                 {
@@ -520,13 +556,13 @@ namespace Tamagawa.EnmityPlugin
             Combatant mychar = GetSelfCombatant();
 
             // 一度に全部読む
-            byte[] buffer = GetByteArray(aggroAddress, 32 * 72 + 2);
-            fixed (byte* p = buffer) num = (short)p[2296];
+            byte[] buffer = GetByteArray(aggroAddress, enmityStructure_ItemSize * 32 + 2);
+            fixed (byte* p = buffer) num = (short)p[enmityStructure_ItemSize * 32];
             if (num <= 0)
             {
                 return result;
             }
-            if (num > 31) num = 31; // max changed??? 32->31
+            if (num > 32) num = 32;
 
 
             // current target
@@ -544,14 +580,14 @@ namespace Tamagawa.EnmityPlugin
             //
             for (int i = 0; i < num; i++)
             {
-                int p = i * 72;
+                int p = i * enmityStructure_ItemSize;
                 uint _id;
                 short _enmity;
 
                 fixed (byte* bp = buffer)
                 {
-                    _id = *(uint*)&bp[p + 56];
-                    _enmity = (short)bp[p + 60];
+                    _id = *(uint*)&bp[p + enmityStructure_ItemOffset_ID];
+                    _enmity = (short)bp[p + enmityStructure_ItemOffset_Enmity];
                 }
 
                 var entry = new AggroEntry()
