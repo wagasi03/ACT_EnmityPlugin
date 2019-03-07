@@ -54,7 +54,8 @@ namespace Tamagawa.EnmityPlugin
         private const int combatantStructureOffset_PosX = 160;
         private const int combatantStructureOffset_PosZ = 164;
         private const int combatantStructureOffset_PosY = 168;
-        private const int combatantStructureOffset_Heading = 5840;
+        private const int combatantStructureOffset_Heading = 176;
+        private const int combatantStructureOffset_TargetID = 5840; //wrong??
         private const int combatantStructureOffset_CurrentHP = 5976;
         private const int combatantStructureOffset_MaxHP = 5980;
         private const int combatantStructureOffset_CurrentMP = 5984;
