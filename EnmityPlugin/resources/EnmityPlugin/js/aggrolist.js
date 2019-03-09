@@ -3,41 +3,42 @@ var hideNoAggro = false;
 
 // ロールの定義
 var JobRole = {
-    PLD: 'TANK',
-    WAR: 'TANK',
-    GLD: 'TANK',
-    MRD: 'TANK',
-    DRK: 'TANK',
+  PLD: 'TANK',
+  WAR: 'TANK',
+  GLD: 'TANK',
+  MRD: 'TANK',
+  DRK: 'TANK',
 
-    CNJ: 'HEALER',
-    WHM: 'HEALER',
-    SCH: 'HEALER',
-    AST: 'HEALER',
+  CNJ: 'HEALER',
+  WHM: 'HEALER',
+  SCH: 'HEALER',
+  AST: 'HEALER',
 
-    PGL: 'DPS',
-    LNC: 'DPS',
-    ARC: 'DPS',
-    THM: 'DPS',
-    MNK: 'DPS',
-    DRG: 'DPS',
-    BRD: 'DPS',
-    BLM: 'DPS',
-    ACN: 'DPS',
-    SMN: 'DPS',
-    ROG: 'DPS',
-    NIN: 'DPS',
-    MCH: 'DPS',
-	SAM: 'DPS',
-	RDM: 'DPS'
+  PGL: 'DPS',
+  LNC: 'DPS',
+  ARC: 'DPS',
+  THM: 'DPS',
+  MNK: 'DPS',
+  DRG: 'DPS',
+  BRD: 'DPS',
+  BLM: 'DPS',
+  ACN: 'DPS',
+  SMN: 'DPS',
+  ROG: 'DPS',
+  NIN: 'DPS',
+  MCH: 'DPS',
+  SAM: 'DPS',
+  RDM: 'DPS',
+  BLU: 'DPS'
 };
 
 // フィルタ
 Vue.filter('jobrole', function (v) {
-    var role = JobRole[v.JobName];
-    if (v.isPet) return "Pet";
-    if (v.isMe) return "Me";
-    if (role != null) return role;
-    return "UNKNOWN";
+  var role = JobRole[v.JobName];
+  if (v.isPet) return "Pet";
+  if (v.isMe) return "Me";
+  if (role != null) return role;
+  return "UNKNOWN";
 });
 
 var aggrolist = new Vue({
@@ -50,16 +51,16 @@ var aggrolist = new Vue({
     combatants: null,
     hide: false
   },
-  attached: function() {
+  attached: function () {
     document.addEventListener('onOverlayDataUpdate', this.update);
     document.addEventListener('onOverlayStateUpdate', this.updateState);
   },
-  detached: function() {
+  detached: function () {
     document.removeEventListener('onOverlayStateUpdate', this.updateState);
     document.removeEventListener('onOverlayDataUpdate', this.update);
   },
   methods: {
-    update: function(e) {
+    update: function (e) {
       this.updated = true;
       this.combatants = [];
       if (e.detail.Enmity.AggroList != null) {
@@ -84,38 +85,40 @@ var aggrolist = new Vue({
           } else {
             c.hatecolor = 'green';
           }
-          
-          if(typeof(statusArray) != "undefined") {
+
+          if (typeof (statusArray) != "undefined") {
             var ownedStatuses = [];
             var newStatuses = [];
-            for (var j=0; j<c.Statuses.length; j++) {
-              if(statusArray[c.Statuses[j].StatusID] != undefined) {
-                c.Statuses[j].iconFileName = statusArray[c.Statuses[j].StatusID].iconFileName;
-                c.Statuses[j].name = statusArray[c.Statuses[j].StatusID].name;
-                if(c.Statuses[j].IsOwner) {
-                  ownedStatuses.push(c.Statuses[j]);
-                } else {
-                  newStatuses.push(c.Statuses[j]);
+            if (c.Statuses != null) {
+              for (var j = 0; j < c.Statuses.length; j++) {
+                if (statusArray[c.Statuses[j].StatusID] != undefined) {
+                  c.Statuses[j].iconFileName = statusArray[c.Statuses[j].StatusID].iconFileName;
+                  c.Statuses[j].name = statusArray[c.Statuses[j].StatusID].name;
+                  if (c.Statuses[j].IsOwner) {
+                    ownedStatuses.push(c.Statuses[j]);
+                  } else {
+                    newStatuses.push(c.Statuses[j]);
+                  }
                 }
-              } 
+              }
             }
             c.Statuses = ownedStatuses.concat(newStatuses);
           }
-          
+
           this.combatants.push(c);
         }
       }
       this.hide = (hideNoAggro && this.combatants.length == 0);
     },
-    updateState: function(e) {
+    updateState: function (e) {
       this.locked = e.detail.isLocked;
     },
-    toggleCollapse: function() {
+    toggleCollapse: function () {
       this.collapsed = !this.collapsed;
     }
   }
 });
 
-Number.prototype.format = function(char, cnt){
-  return (Array(cnt).fill(char).join("") + this.valueOf()).substr(-1*cnt); 
+Number.prototype.format = function (char, cnt) {
+  return (Array(cnt).fill(char).join("") + this.valueOf()).substr(-1 * cnt);
 }
