@@ -444,7 +444,7 @@ namespace Tamagawa.EnmityPlugin
                         Buffer.BlockCopy(statusesSource, i * combatantStructureOffset_StatusItemSize, statusBytes, 0, combatantStructureOffset_StatusItemSize);
                         var status = new Status
                         {
-                            StatusID = BitConverter.ToInt16(statusBytes, combatantStructureOffset_StatusItem_ID),
+                            StatusID = BitConverter.ToUInt16(statusBytes, combatantStructureOffset_StatusItem_ID),
                             Stacks = statusBytes[combatantStructureOffset_StatusItem_Stacks],
                             Duration = BitConverter.ToSingle(statusBytes, combatantStructureOffset_StatusItem_Duration),
                             CasterID = BitConverter.ToUInt32(statusBytes, combatantStructureOffset_StatusItem_CasterID),
@@ -460,7 +460,7 @@ namespace Tamagawa.EnmityPlugin
                     // Cast
                     combatant.Casting = new Cast
                     {
-                        ID = *(short*)&p[combatantStructureOffset_CastingID],
+                        ID = *(ushort*)&p[combatantStructureOffset_CastingID],
                         TargetID = *(uint*)&p[combatantStructureOffset_CastingTargetID],
                         Progress = *(Single*)&p[combatantStructureOffset_CastingProgress],
                         Time = *(Single*)&p[combatantStructureOffset_CastingTime],
