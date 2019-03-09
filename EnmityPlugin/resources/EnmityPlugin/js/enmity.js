@@ -3,32 +3,33 @@ var hideNoTarget = false;
 
 // ロールの定義
 var JobRole = {
- PLD: 'TANK',
- WAR: 'TANK',
- GLD: 'TANK',
- MRD: 'TANK',
- DRK: 'TANK',
+  PLD: 'TANK',
+  WAR: 'TANK',
+  GLD: 'TANK',
+  MRD: 'TANK',
+  DRK: 'TANK',
 
- CNJ: 'HEALER',
- WHM: 'HEALER',
- SCH: 'HEALER',
- AST: 'HEALER',
+  CNJ: 'HEALER',
+  WHM: 'HEALER',
+  SCH: 'HEALER',
+  AST: 'HEALER',
 
- PGL: 'DPS',
- LNC: 'DPS',
- ARC: 'DPS',
- THM: 'DPS',
- MNK: 'DPS',
- DRG: 'DPS',
- BRD: 'DPS',
- BLM: 'DPS',
- ACN: 'DPS',
- SMN: 'DPS',
- ROG: 'DPS',
- NIN: 'DPS',
- MCH: 'DPS',
- SAM: 'DPS',
- RDM: 'DPS'
+  PGL: 'DPS',
+  LNC: 'DPS',
+  ARC: 'DPS',
+  THM: 'DPS',
+  MNK: 'DPS',
+  DRG: 'DPS',
+  BRD: 'DPS',
+  BLM: 'DPS',
+  ACN: 'DPS',
+  SMN: 'DPS',
+  ROG: 'DPS',
+  NIN: 'DPS',
+  MCH: 'DPS',
+  SAM: 'DPS',
+  RDM: 'DPS',
+  BLU: 'DPS'
 };
 
 // ターゲットしてないときのダミーデータ
@@ -52,10 +53,10 @@ var noEntry = {
 
 // フィルタ
 Vue.filter('jobclass', function (v) {
- var role = JobRole[v.JobName];
- if (v.isPet) return "Pet";
- if (role != null) return role;
- return "UNKNOWN";
+  var role = JobRole[v.JobName];
+  if (v.isPet) return "Pet";
+  if (role != null) return role;
+  return "UNKNOWN";
 });
 
 Vue.filter('hpcolor', function (t) {
@@ -81,16 +82,16 @@ var enmity = new Vue({
     myEntry: null,
     hide: false
   },
-  attached: function() {
+  attached: function () {
     document.addEventListener('onOverlayDataUpdate', this.update);
     document.addEventListener('onOverlayStateUpdate', this.updateState);
   },
-  detached: function() {
+  detached: function () {
     document.removeEventListener('onOverlayStateUpdate', this.updateState);
     document.removeEventListener('onOverlayDataUpdate', this.update);
   },
   methods: {
-    update: function(e) {
+    update: function (e) {
       var enmity = e.detail.Enmity;
 
       // Entries sorted by enmity, and keys are integers.
@@ -123,21 +124,21 @@ var enmity = new Vue({
 
       this.updated = true;
       this.entries = enmity.Entries;
-      this.target  = enmity.Target ? enmity.Target : noTarget;
+      this.target = enmity.Target ? enmity.Target : noTarget;
       this.hide = (hideNoTarget && enmity.Target == null);
-      if(this.hide){
+      if (this.hide) {
         document.getElementById("enmity").style.visibility = "hidden";
-      }else{
+      } else {
         document.getElementById("enmity").style.visibility = "visible";
       }
     },
-    updateState: function(e) {
+    updateState: function (e) {
       this.locked = e.detail.isLocked;
     },
-    toggleCollapse: function() {
+    toggleCollapse: function () {
       this.collapsed = !this.collapsed;
     },
-    toTimeString: function(time) {
+    toTimeString: function (time) {
       var totalSeconds = Math.floor(time);
       var minutes = Math.floor(totalSeconds / 60);
       var seconds = totalSeconds % 60;
@@ -148,7 +149,7 @@ var enmity = new Vue({
       str += seconds + "s";
       return str;
     },
-    processTarget: function(target) {
+    processTarget: function (target) {
       target.TimeToDeath = '';
 
       // Throw away entries older than this.
@@ -171,7 +172,7 @@ var enmity = new Vue({
         h.lastUpdated = now;
         // Don't update if hp is unchanged to keep estimate more stable.
         if (h.hist.length == 0 || h.hist[h.hist.length - 1].hp != target.CurrentHP) {
-          h.hist.push({time: now, hp: target.CurrentHP});
+          h.hist.push({ time: now, hp: target.CurrentHP });
         }
       }
 

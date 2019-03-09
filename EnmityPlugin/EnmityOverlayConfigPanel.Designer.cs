@@ -288,8 +288,8 @@
             // 
             // panel_Buttons
             // 
-            resources.ApplyResources(this.panel_Buttons, "panel_Buttons");
             this.panel_Buttons.Controls.Add(this.tableLayoutPanel8);
+            resources.ApplyResources(this.panel_Buttons, "panel_Buttons");
             this.panel_Buttons.Name = "panel_Buttons";
             // 
             // tableLayoutPanel8
@@ -354,9 +354,9 @@
             // 
             // table_AggroListSort
             // 
-            resources.ApplyResources(this.table_AggroListSort, "table_AggroListSort");
             this.table_AggroListSort.Controls.Add(this.combo_AggroListSortKey, 0, 0);
             this.table_AggroListSort.Controls.Add(this.check_AggroListSortDescend, 1, 0);
+            resources.ApplyResources(this.table_AggroListSort, "table_AggroListSort");
             this.table_AggroListSort.Name = "table_AggroListSort";
             // 
             // combo_AggroListSortKey
