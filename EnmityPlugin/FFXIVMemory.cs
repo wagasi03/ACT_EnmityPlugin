@@ -55,7 +55,7 @@ namespace Tamagawa.EnmityPlugin
         private const int combatantStructureOffset_PosZ = 164;
         private const int combatantStructureOffset_PosY = 168;
         private const int combatantStructureOffset_Heading = 176;
-        private const int combatantStructureOffset_TargetID = 5840; //wrong??
+        private const int combatantStructureOffset_TargetID = 5840;
         private const int combatantStructureOffset_CurrentHP = 5976;
         private const int combatantStructureOffset_MaxHP = 5980;
         private const int combatantStructureOffset_CurrentMP = 5984;
@@ -419,7 +419,7 @@ namespace Tamagawa.EnmityPlugin
                 combatant.PosY = *(Single*)&p[combatantStructureOffset_PosY];
                 combatant.Heading = *(Single*)&p[combatantStructureOffset_Heading];
 
-                combatant.TargetID = *(uint*)&p[combatantStructureOffset_Heading];
+                combatant.TargetID = *(uint*)&p[combatantStructureOffset_TargetID];
 
                 if (combatant.type == ObjectType.PC || combatant.type == ObjectType.Monster)
                 {
