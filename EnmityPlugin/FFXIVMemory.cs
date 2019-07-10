@@ -56,13 +56,12 @@ namespace Tamagawa.EnmityPlugin
         private const int combatantStructureOffset_PosY = 168;
         private const int combatantStructureOffset_Heading = 176;
         private const int combatantStructureOffset_TargetID = 5840;
-        private const int combatantStructureOffset_CurrentHP = 5976;
-        private const int combatantStructureOffset_MaxHP = 5980;
-        private const int combatantStructureOffset_CurrentMP = 5984;
-        private const int combatantStructureOffset_MaxMP = 5988;
-        private const int combatantStructureOffset_CurrentTP = 5992;
-        private const int combatantStructureOffset_Job = 6032;
-        private const int combatantStructureOffset_Level = 6034;
+        private const int combatantStructureOffset_CurrentHP = 6308;
+        private const int combatantStructureOffset_MaxHP = 6312;
+        private const int combatantStructureOffset_CurrentMP = 6316;
+        private const int combatantStructureOffset_MaxMP = 6320;
+        private const int combatantStructureOffset_Job = 6364;
+        private const int combatantStructureOffset_Level = 6366;
 
         private const int combatantStructureOffset_StatusOffset = 6168;
         private const int combatantStructureOffset_StatusItemSize = 12;
@@ -72,9 +71,9 @@ namespace Tamagawa.EnmityPlugin
         private const int combatantStructureOffset_StatusItem_CasterID = 8;
 
         private const int combatantStructureOffset_CastingID = 6916;
-        private const int combatantStructureOffset_CastingTargetID = 6928;
-        private const int combatantStructureOffset_CastingProgress = 6964;
-        private const int combatantStructureOffset_CastingTime = 6968;
+        private const int combatantStructureOffset_CastingTargetID = 7264;
+        private const int combatantStructureOffset_CastingProgress = 7030;
+        private const int combatantStructureOffset_CastingTime = 7304;
 
 
         private EnmityOverlay _overlay;
@@ -427,8 +426,6 @@ namespace Tamagawa.EnmityPlugin
                     combatant.MaxHP = *(int*)&p[combatantStructureOffset_MaxHP];
                     combatant.CurrentMP = *(int*)&p[combatantStructureOffset_CurrentMP];
                     combatant.MaxMP = *(int*)&p[combatantStructureOffset_MaxMP];
-                    combatant.CurrentTP = *(short*)&p[combatantStructureOffset_CurrentTP];
-                    combatant.MaxTP = 1000;
                     combatant.Job = p[combatantStructureOffset_Job];
                     combatant.Level = p[combatantStructureOffset_Level];
 
@@ -471,9 +468,7 @@ namespace Tamagawa.EnmityPlugin
                     combatant.CurrentHP =
                     combatant.MaxHP =
                     combatant.CurrentMP =
-                    combatant.MaxMP =
-                    combatant.MaxTP =
-                    combatant.CurrentTP = 0;
+                    combatant.MaxMP = 0;
                     combatant.Statuses = new List<Status>();
                     combatant.Casting = new Cast();
                 }
