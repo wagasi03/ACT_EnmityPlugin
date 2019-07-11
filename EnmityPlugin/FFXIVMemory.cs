@@ -428,6 +428,8 @@ namespace Tamagawa.EnmityPlugin
                     combatant.MaxMP = *(int*)&p[combatantStructureOffset_MaxMP];
                     combatant.Job = p[combatantStructureOffset_Job];
                     combatant.Level = p[combatantStructureOffset_Level];
+                    combatant.CurrentTP = 0;
+                    combatant.MaxTP = 0;
 
                     // Status aka Buff,Debuff
                     combatant.Statuses = new List<Status>();
@@ -467,6 +469,8 @@ namespace Tamagawa.EnmityPlugin
                 {
                     combatant.CurrentHP =
                     combatant.MaxHP =
+                    combatant.CurrentTP =
+                    combatant.MaxTP =
                     combatant.CurrentMP =
                     combatant.MaxMP = 0;
                     combatant.Statuses = new List<Status>();

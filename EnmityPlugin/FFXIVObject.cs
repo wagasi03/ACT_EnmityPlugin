@@ -34,6 +34,8 @@ namespace Tamagawa.EnmityPlugin
         public int MaxHP;
         public int CurrentMP;
         public int MaxMP;
+        public int CurrentTP;
+        public int MaxTP;
 
         public List<Status> Statuses;
         public Cast Casting;
