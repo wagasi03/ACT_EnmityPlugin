@@ -8,6 +8,7 @@ var JobRole = {
   GLD: 'TANK',
   MRD: 'TANK',
   DRK: 'TANK',
+  GNB: 'TANK',
 
   CNJ: 'HEALER',
   WHM: 'HEALER',
@@ -29,7 +30,8 @@ var JobRole = {
   MCH: 'DPS',
   SAM: 'DPS',
   RDM: 'DPS',
-  BLU: 'DPS'
+  BLU: 'DPS',
+  DNC: 'DPS'
 };
 
 // ターゲットしてないときのダミーデータ
