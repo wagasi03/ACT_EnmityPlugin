@@ -34,6 +34,8 @@ namespace Tamagawa.EnmityPlugin
         public int MaxHP;
         public int CurrentMP;
         public int MaxMP;
+        public int CurrentTP;
+        public int MaxTP;
 
         public List<Status> Statuses;
         public Cast Casting;
@@ -119,7 +121,9 @@ namespace Tamagawa.EnmityPlugin
         AST, // 33
         SAM, // 34
         RDM, // 35
-        BLU  // 36
+        BLU, // 36
+        GNB, // 37
+        DNC  // 38
     }
 
     //// 敵視されてるキャラエントリ
